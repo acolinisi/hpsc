@@ -8,7 +8,26 @@ Clone this repository with the recursive flag:
 
     $ git clone -r git@github.com:acolinisi/hpsc.git
 
-## Guide
+## Running Qemu from the parent repo tree
+
+Scripts in hpsc-bsp/ including run-qemu.sh source an "environment definition"
+file that defines paths to host tools and target binaries.
+
+The default env file is in `hpsc-bsp/qemu-env.sh`. The env file for running
+from this parent repo, is in `qemu-env.sh`.
+
+The point the scripts path to the env file, set the `QEMU_ENV` environment
+variable:
+
+    $ export QEMU_ENV=$PWD/qemu-env.sh
+
+If you would like to modify the env file for whatever reason, create a copy in
+the root of this parent repo, and name it `qemu-env-local.sh` so that it is
+ignored by git, and set `QEMU_ENV` environment variable:
+
+    $ export QEMU_ENV=$PWD/qemu-env-local.sh
+
+## Development workflow
 
 After work in child repos has been committed and pushed,
 check which repos have been modified:
