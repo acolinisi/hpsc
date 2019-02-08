@@ -3,3 +3,54 @@
 Holds references to commits of all repositories of HPSC project.
 Each commit in this repository designates a consistent snapshot
 of the HPSC codebase, i.e. an internal release.
+
+Clone this repository with the recursive flag:
+
+    $ git clone -r git@github.com:acolinisi/hpsc.git
+
+## Guide
+
+After work in child repos has been committed and pushed,
+check which repos have been modified:
+
+    $ git status
+        modified: child-repo-A (new commits)
+        modified: child-repo-B (modified content)
+
+The "new commits" log means that the currently checked out child repo
+is at a commit that differs from the last snapshot recorded in this
+parent repo. The difference may be in either direction: git reset to
+an earlier commit in the child repo will produce the same message.
+
+The "modified content" means that the checked out child repo has uncommitted
+modification. First, commit those changes in the child repo.
+
+Once git status shows "new commits" for all modified repos and the commits of
+each child repo has been pushed to the respective remote, then it's ready to be
+tested, snapshot via a commit to this parent repo, and pushed.
+
+To capture a new consistent snapshot after child repos have been modified,
+compose a description of the overall global change, and commit:
+
+    $ git add child-repo-A  child-repo-B ...
+    $ git commit
+    $ git push
+
+### Branches
+
+When changing the checked out commit this repo (by checking out, switching
+branches, pulling), the checked out trees of the submodules will only be
+updated on your explicit request via the `submodule update` command:
+
+    $ git checkout branch-A
+    $ git submodule update
+
+If there are local modifications in the checking out tree of a submodule, and
+the submodule reference was modified in the parent repo (e.g. in the branch of
+the parent repo being switched into), then the update may fail with the usual
+message about checkout being disallowed due to local modifications.
+
+If the change being switched into adds submodules then, the new submodules
+need to be initialized:
+
+    $ git submodule init
