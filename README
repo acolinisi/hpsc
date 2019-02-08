@@ -36,14 +36,37 @@ compose a description of the overall global change, and commit:
     $ git commit
     $ git push
 
-### Branches
+## Checking out in the parent repo
 
 When changing the checked out commit this repo (by checking out, switching
 branches, pulling), the checked out trees of the submodules will only be
-updated on your explicit request via the `submodule update` command:
+updated on your explicit request.
 
-    $ git checkout branch-A
-    $ git submodule update
+This can be done in two ways:
+
+    1. manually: by checking out (incl. pulling, merging) the commit
+       hash of the child that's referenced in the parent repo, manually
+       in the checked out child repo
+
+	    $ cd child-repo-A
+            $ git pull --ff-only origin master
+
+       Once the child repo is checkout at the hash that matches the
+       reference in the parent, the status in the parent will be clean
+       without motifications;
+
+            $ cd ..
+            $ git status
+
+    2. automatically: via the `submodule update` command
+
+	    $ git checkout branch-A
+	    $ git submodule update
+
+	After the child repo tree has been checked out (to the child's hash H
+	referenced in the commit of the parent repo), the child's tree will be
+	in a "detached" state (detached from the commit H). To modify the
+        child's repo, checkout the comimt H to a branch, to "re-attach" to a branch.
 
 If there are local modifications in the checking out tree of a submodule, and
 the submodule reference was modified in the parent repo (e.g. in the branch of
