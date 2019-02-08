@@ -1,0 +1,27 @@
+[submodule "linux-hpsc"]
+	path = linux-hpsc
+	url = git@github.com:ISI-apex/linux-hpsc.git
+[submodule "qemu"]
+	path = qemu
+	url = git@github.com:ISI-apex/qemu.git
+[submodule "qemu-devicetrees"]
+	path = qemu-devicetrees
+	url = git@github.com:ISI-apex/qemu-devicetrees.git
+[submodule "hpsc-baremetal"]
+	path = hpsc-baremetal
+	url = git@github.com:ISI-apex/hpsc-baremetal.git
+[submodule "hpsc-bsp"]
+	path = hpsc-bsp
+	url = git@github.com:ISI-apex/hpsc-bsp.git
+[submodule "hpsc-utils"]
+	path = hpsc-utils
+	url = git@github.com:ISI-apex/hpsc-utils.git
+[submodule "u-boot-r52"]
+	path = u-boot-r52
+	url = git@github.com:ISI-apex/u-boot.git
+[submodule "u-boot-a53"]
+	path = u-boot-a53
+	url = git@github.com:ISI-apex/u-boot.git
+[submodule "arm-trusted-firmware"]
+	path = arm-trusted-firmware
+	url = git@github.com:ISI-apex/arm-trusted-firmware.git
