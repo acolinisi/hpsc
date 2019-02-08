@@ -1,2 +1,4 @@
 qemu-bld/
 qemu-env-local.sh
+.*.swp
+.*.swo
