@@ -27,6 +27,11 @@ ignored by git, and set `QEMU_ENV` environment variable:
 
     $ export QEMU_ENV=$PWD/qemu-env-local.sh
 
+With `QEMU_ENV` variable set, run Qemu from `hpsc-bsp/` subdirectory:
+
+    $ cd hpsc-bsp
+    $ ./run-qemu.sh
+
 ## Development workflow
 
 After work in child repos has been committed and pushed,
