@@ -1,2 +1,2 @@
 qemu-bld/
-qemu-env.sh
+qemu-env-local.sh
