@@ -1,0 +1,5 @@
+# Parent repository for the HPSC project
+
+Holds references to commits of all repositories of HPSC project.
+Each commit in this repository designates a consistent snapshot
+of the HPSC codebase, i.e. an internal release.
