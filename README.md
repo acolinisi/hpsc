@@ -111,9 +111,10 @@ Consider adding shortcuts and functions like these to your ~/.bashrc:
     alias gds='git diff --staged'
     alias gm='git submodule'
 
-Print commits in the given branch of a child repo unpushed to the respective
-remote named 'origin':
+Print commits in the current branch of each child repo unpushed to the respective
+branch in the remote named 'origin':
 
     gnp() {
-	git submodule foreach git diff --oneline origin/$1..$1
+        local gbc="git describe --all | cut -d/ -f2"
+        git submodule foreach git log --oneline 'origin/$('$gbc')..$('$gbc')'
     }
