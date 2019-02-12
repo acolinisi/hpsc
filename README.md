@@ -32,6 +32,11 @@ With `QEMU_ENV` variable set, run Qemu from `hpsc-bsp/` subdirectory:
     $ cd hpsc-bsp
     $ ./run-qemu.sh
 
+To temporarily add arguments to QEMU command line, add them to QEMU\_ARGS
+environment variable or set the variable in `qemu-env-local.sh`:
+
+    $ export QEMU_ARGS=(-etrace-flags mem -etrace /tmp/trace)
+
 ## Development workflow
 
 After work in child repos has been committed and pushed,
@@ -40,6 +45,12 @@ check which repos have been modified:
     $ git status
         modified: child-repo-A (new commits)
         modified: child-repo-B (modified content)
+
+More detailed information about the commits in each child that make it
+different from its hash recorded in the parent repo (i.e. the child's
+version in the current snapshot):
+
+    $ git submodule summary
 
 The "new commits" log means that the currently checked out child repo
 is at a commit that differs from the last snapshot recorded in this
@@ -102,6 +113,40 @@ need to be initialized:
 
     $ git submodule init
 
+## Invariants to maintain
+
+1. A commit hash need to be pushed and be reachable from *a* branch in the remote
+   repository before that hash can be committed to this parent repository.
+   Otherwise, the reference in this parent repo will be a dangling pointer.
+   The `gnp` helper given below helps identify unpushed commits in the child
+   repos.
+
+2. Child hashes committed to the `master` branch of this parent repo should be
+   in the `hpsc` branch (which has the role of `master`) in the respective
+   child repo. Otherwise, the commit in the parent repo would snapshot *forks*.
+   It is useful to snapshot forks, but simply keep them in a branch of this
+   repo. Snapshots of forks are useful, for example, when recording a snapshot
+   of a feature tested on top of a (previous) snapshot, prior to rebasing
+   that feature on top of whatever happens to be at the tip of the remote child
+   repo (or, prior to merging the tip of the remote child repo via pull).
+
+3. There should be minimal commits in the child repo that are not in the
+   latest snapshot. Given invariant #2, to create a snapshot S with a new
+   feature X, it is necessary to rebase that feature on top of the latest
+   child master (or merge the master via pull) -- since until that rebase,
+   the feature is a fork. Once rebased and pushed, the feature is now
+   in the child master, and thus its commit hash can be committed in this
+   parent repo to create the snapshot, and preserving invariant #2.
+
+   This implies tha the feature will need to be tested with commits B in
+   between last snapshot in the parent and the tip of the child master --- if
+   commits B are an inconsistent change, feature X tests on top of / with
+   commonts B might fail, which would block the creation of the snapshot S with
+   feature X.  Maintaining maintaining invariant #3 is the same as keeping the
+   set B empty or as small as possible. In practice, don't push to children
+   until you are nearly ready to also create the snapshot and push it to the
+   parent.
+
 ## Useful shell helpers
 
 Consider adding shortcuts and functions like these to your ~/.bashrc:
@@ -110,6 +155,7 @@ Consider adding shortcuts and functions like these to your ~/.bashrc:
     alias gd='git diff'
     alias gds='git diff --staged'
     alias gm='git submodule'
+    alias gms='git submodule summary'
 
 Print commits in the current branch of each child repo unpushed to the respective
 branch in the remote named 'origin':
