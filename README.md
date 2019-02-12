@@ -101,3 +101,19 @@ If the change being switched into adds submodules then, the new submodules
 need to be initialized:
 
     $ git submodule init
+
+## Useful shell helpers
+
+Consider adding shortcuts and functions like these to your ~/.bashrc:
+
+    alias gs='git status'
+    alias gd='git diff'
+    alias gds='git diff --staged'
+    alias gm='git submodule'
+
+Print commits in the given branch of a child repo unpushed to the respective
+remote named 'origin':
+
+    gnp() {
+	git submodule foreach git diff --oneline origin/$1..$1
+    }
