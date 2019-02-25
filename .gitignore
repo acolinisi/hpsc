@@ -1,4 +1,5 @@
 qemu-bld/
 qemu-env-local.sh
+syscfg.ini
 .*.swp
 .*.swo
