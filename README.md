@@ -115,6 +115,9 @@ need to be initialized:
 
 ## Invariants to maintain
 
+The following invariants are good to maintain. No automatic enforcement is
+done, so have to observe manually whenever pushing.
+
 1. A commit hash need to be pushed and be reachable from *a* branch in the remote
    repository before that hash can be committed to this parent repository.
    Otherwise, the reference in this parent repo will be a dangling pointer.
@@ -122,8 +125,9 @@ need to be initialized:
    repos.
 
 2. Child hashes committed to the `master` branch of this parent repo should be
-   in the `hpsc` branch (which has the role of `master`) in the respective
-   child repo. Otherwise, the commit in the parent repo would snapshot *forks*.
+   in the `snap` branch in the respective child repo. Otherwise, the commit in
+   the parent repo would snapshot *forks*.
+
    It is useful to snapshot forks, but simply keep them in a branch of this
    repo. Snapshots of forks are useful, for example, when recording a snapshot
    of a feature tested on top of a (previous) snapshot, prior to rebasing
