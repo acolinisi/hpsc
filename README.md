@@ -165,6 +165,6 @@ Print commits in the current branch of each child repo unpushed to the respectiv
 branch in the remote named 'origin':
 
     gnp() {
-        local gbc="git describe --all | cut -d/ -f2"
+        local gbc="git rev-parse --abbrev-ref HEAD"
         git submodule foreach git log --oneline 'origin/$('$gbc')..$('$gbc')'
     }
