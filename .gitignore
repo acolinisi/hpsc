@@ -1,3 +1,4 @@
 qemu-bld/
+hpsc-env.sh
 .*.swp
 .*.swo
