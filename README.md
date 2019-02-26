@@ -10,32 +10,64 @@ Clone this repository with the recursive flag:
 
 ## Running Qemu from the parent repo tree
 
-Scripts in hpsc-bsp/ including run-qemu.sh source an "environment definition"
-file that defines paths to host tools and target binaries.
+Multiple users may run Qemu using one checked out copy of this parent repo,
+without write access to the parent repo directory. If a user wishes
+to modify different target code, the user may create a copy of the
+respective repo and point Qemu to the binaries produced in the local copy,
+as described later in this section.
 
-The default env file is in `hpsc-bsp/qemu-env.sh`. The env file for running
-from this parent repo, is in `qemu-env.sh`.
+Create a directory somewhere in your home directory which will store artifacts
+associated with a Qemu run. Preferably place the run directory outside of this
+source tree, since it would be picked up as untracked by git status),
 
-The point the scripts path to the env file, set the `QEMU_ENV` environment
-variable:
+    $ mkdir ~/qemu-run
+    $ cd ~/qemu-run
 
-    $ export QEMU_ENV=$PWD/qemu-env.sh
+Add `hpsc-bsp` which holds the run script to PATH for convenience,
+where you set $HPSC_ROOT to the absolute path of the checked out
+working copy of this parent repo:
 
-If you would like to modify the env file for whatever reason, create a copy in
-the root of this parent repo, and name it `qemu-env-local.sh` so that it is
-ignored by git, and set `QEMU_ENV` environment variable:
+    $ HPSC_ROOT=/path/to/hpsc-parent-repo
+    $ export PATH=$PATH:$HPSC_ROOT/hpsc-bsp
 
-    $ export QEMU_ENV=$PWD/qemu-env-local.sh
+Launch Qemu with the run script which was added to `$PATH` above:
 
-With `QEMU_ENV` variable set, run Qemu from `hpsc-bsp/` subdirectory:
+    $ run-qemu.sh
 
-    $ cd hpsc-bsp
-    $ ./run-qemu.sh
+The run script `run-qemu.sh` sources environment settings ( paths to host tools
+and target binaries) from `qemu-env.sh` located in:
+
+    * `$HPSC_ROOT/`
+    * `$PWD` (current directory, i.e. the run directory, e.g. `~/qemu-run`)
+
+The default settings should work out with the run command above out of the box.
+
+If you wish to override any variables in `$HPSC_ROOT/qemu-env.sh`, then
+create `~/qemu-run/qemu-env.sh` and define the variables you wish to override.
 
 To temporarily add arguments to QEMU command line, add them to QEMU\_ARGS
-environment variable or set the variable in `qemu-env-local.sh`:
+environment variable, with the following statement, either executed on the
+cmomand line or added to `qemu-env.sh` in the run directory:
 
     $ export QEMU_ARGS=(-etrace-flags mem -etrace /tmp/trace)
+
+To modify any part of the software, the user may create a private local
+copy of the respective repository, modify and build it locally, and point Qemu
+to the binaries produced in the local copy, by setting variables
+in `~/qemu-run/qemu-env.sh` that store the paths to target binaries.
+
+For example, to modify ATF (while re-using everything else), first copy
+it from the parent repo (or alternatively clone the respective git repository):
+
+    $ mkdir hpsc-sw/
+    $ cp -r $HPSC_ROOT/arm-trusted-firmware ~/hpsc-sw/
+
+Then, override the path to the target binary by adding to `~/qemu-run/qemu-env.sh`:
+
+    HPPS_FW=~/hpsc-sw/arm-trusted-firmware/build/hpsc/debug/bl31.bin
+
+For the variable name and for the path of each target artifact relative to the
+respective source tree, see `$HPSC_ROOT/qemu-env.sh`.
 
 ## Development workflow
 
@@ -101,7 +133,17 @@ This can be done in two ways:
 	After the child repo tree has been checked out (to the child's hash H
 	referenced in the commit of the parent repo), the child's tree will be
 	in a "detached" state (detached from the commit H). To modify the
-        child's repo, checkout the comimt H to a branch, to "re-attach" to a branch.
+        child's repo, checkout the comimt H to a branch, to "re-attach" to a branch:
+
+	   $ cd child-repo-A
+           $ git checkout snap
+
+	Or, do the same for all submodules at ones:
+
+	   $ git submodule foreach git checkout snap
+
+	Note that the checkout to a branch is necessary for `gnp` helper (see
+	below) to work, it won't work if the child repos are in detached state.
 
 If there are local modifications in the checking out tree of a submodule, and
 the submodule reference was modified in the parent repo (e.g. in the branch of
@@ -160,6 +202,7 @@ Consider adding shortcuts and functions like these to your ~/.bashrc:
     alias gds='git diff --staged'
     alias gm='git submodule'
     alias gms='git submodule summary'
+    alias gmu='git submodule update'
 
 Print commits in the current branch of each child repo unpushed to the respective
 branch in the remote named 'origin':
