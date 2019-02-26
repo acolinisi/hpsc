@@ -31,5 +31,5 @@ QEMU_BIN_DIR=$QEMU_DIR/aarch64-softmmu
 QEMU_DT_FILE=$HPSC_ROOT/qemu-devicetrees/LATEST/SINGLE_ARCH/hpsc-arch.dtb
 
 # System configuration interpreted by TRCH
-SYSCFG=${BSP_DIR}/syscfg.ini
+SYSCFG=$HPSC_ROOT/syscfg.ini
 SYSCFG_SCHEMA=${BSP_DIR}/syscfg-schema.json
