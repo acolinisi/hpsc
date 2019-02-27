@@ -10,35 +10,29 @@ Clone this repository with the recursive flag:
 
 ## Running Qemu from the parent repo tree
 
-Multiple users may run Qemu using one checked out copy of this parent repo,
-without write access to the parent repo directory. If a user wishes
-to modify different target code, the user may create a copy of the
-respective repo and point Qemu to the binaries produced in the local copy,
-as described later in this section.
+Set `$HPSC_ROOT` to the absolute path of the checked out
+working copy of this parent repo:
 
-Create a directory somewhere in your home directory which will store artifacts
-associated with a Qemu run. Preferably place the run directory outside of this
-source tree, since it would be picked up as untracked by git status),
+    $ export HPSC_ROOT=/path/to/hpsc-parent-repo
+
+Add `hpsc-bsp` which holds the run script to PATH for convenience,
+
+    $ export PATH=$PATH:$HPSC_ROOT/hpsc-bsp
+
+
+Create a directory which will store artifacts associated with a Qemu run,
+and launch Qemu from this directory. Preferably place the run directory outside
+of this source tree, since it would be picked up as untracked by git status,
 
     $ mkdir ~/qemu-run
     $ cd ~/qemu-run
-
-Add `hpsc-bsp` which holds the run script to PATH for convenience,
-where you set $HPSC_ROOT to the absolute path of the checked out
-working copy of this parent repo:
-
-    $ HPSC_ROOT=/path/to/hpsc-parent-repo
-    $ export PATH=$PATH:$HPSC_ROOT/hpsc-bsp
-
-Launch Qemu with the run script which was added to `$PATH` above:
-
     $ run-qemu.sh
 
 The run script `run-qemu.sh` sources environment settings ( paths to host tools
 and target binaries) from `qemu-env.sh` located in:
 
-    * `$HPSC_ROOT/`
-    * `$PWD` (current directory, i.e. the run directory, e.g. `~/qemu-run`)
+* `$HPSC_ROOT/`
+* `$PWD` (current directory, i.e. the run directory, e.g. `~/qemu-run`)
 
 The default settings should work out with the run command above out of the box.
 
@@ -50,6 +44,14 @@ environment variable, with the following statement, either executed on the
 cmomand line or added to `qemu-env.sh` in the run directory:
 
     $ export QEMU_ARGS=(-etrace-flags mem -etrace /tmp/trace)
+
+### Multiuser setup with shared parent repository copy
+
+Multiple users may run Qemu using one checked out copy of this parent repo,
+without write access to the parent repo directory. The shared copy would
+contain built artifacts. If a user wishes to modify different target code, the
+user may create a copy of the respective repo and point Qemu to the binaries
+produced in the local copy.
 
 To modify any part of the software, the user may create a private local
 copy of the respective repository, modify and build it locally, and point Qemu
@@ -111,39 +113,52 @@ updated on your explicit request.
 
 This can be done in two ways:
 
-    1. manually: by checking out (incl. pulling, merging) the commit
-       hash of the child that's referenced in the parent repo, manually
-       in the checked out child repo
+1. manually: by checking out (incl. pulling, merging) the commit
+hash of the child that's referenced in the parent repo, manually
+in the checked out child repo
 
-	    $ cd child-repo-A
-            $ git pull --ff-only origin master
+    $ cd child-repo-A
+    $ git pull --ff-only origin master
 
-       Once the child repo is checkout at the hash that matches the
-       reference in the parent, the status in the parent will be clean
-       without motifications;
+Once the child repo is checkout at the hash that matches the
+reference in the parent, the status in the parent will be clean
+without motifications;
 
-            $ cd ..
-            $ git status
+    $ cd ..
+    $ git status
 
-    2. automatically: via the `submodule update` command
+2. automatically: via the `submodule update` command
 
-	    $ git checkout branch-A
-	    $ git submodule update
+    $ git checkout branch-A
+    $ git submodule update
 
-	After the child repo tree has been checked out (to the child's hash H
-	referenced in the commit of the parent repo), the child's tree will be
-	in a "detached" state (detached from the commit H). To modify the
-        child's repo, checkout the comimt H to a branch, to "re-attach" to a branch:
+After the child repo tree has been checked out (to the child's hash H
+referenced in the commit of the parent repo), the child's tree will be in a
+"detached" state (detached from the commit H). To modify the child's repo with
+new commits, "re-attach" the child repo to a branch: by checking out either:
 
-	   $ cd child-repo-A
-           $ git checkout snap
+ - an existing branch that points to H (in the common case this will be the
+     `snap` branch)
 
-	Or, do the same for all submodules at ones:
+   $ cd child-repo-A
+   $ git log -1 snap # should say at commit H
+   $ git checkout snap
 
-	   $ git submodule foreach git checkout snap
+ - a new branch with 
 
-	Note that the checkout to a branch is necessary for `gnp` helper (see
-	below) to work, it won't work if the child repos are in detached state.
+   $ cd child-repo-A
+   $ git checkout -b branch-X H
+
+In the former case (checking out the `snap` branch after a `git submodule
+update`), it is sometimes convenient to do it for all children:
+
+   $ git submodule foreach git checkout snap
+
+Note that the for `gnp` helper (see below) to work, the children must be
+checked out on a branch (not detached), since to determine unpushed commits the
+helper compares the current local branch with the branch of the same name in
+the remote commits (in detached state there is no branch name).
+
 
 If there are local modifications in the checking out tree of a submodule, and
 the submodule reference was modified in the parent repo (e.g. in the branch of
@@ -176,22 +191,23 @@ done, so have to observe manually whenever pushing.
    that feature on top of whatever happens to be at the tip of the remote child
    repo (or, prior to merging the tip of the remote child repo via pull).
 
-3. There should be minimal commits in the child repo that are not in the
-   latest snapshot. Given invariant #2, to create a snapshot S with a new
-   feature X, it is necessary to rebase that feature on top of the latest
-   child master (or merge the master via pull) -- since until that rebase,
-   the feature is a fork. Once rebased and pushed, the feature is now
-   in the child master, and thus its commit hash can be committed in this
-   parent repo to create the snapshot, and preserving invariant #2.
+3. There should be no commits in `snap` branch of the child repo that are not
+   in a snapshot.
 
-   This implies tha the feature will need to be tested with commits B in
-   between last snapshot in the parent and the tip of the child master --- if
-   commits B are an inconsistent change, feature X tests on top of / with
-   commonts B might fail, which would block the creation of the snapshot S with
-   feature X.  Maintaining maintaining invariant #3 is the same as keeping the
-   set B empty or as small as possible. In practice, don't push to children
-   until you are nearly ready to also create the snapshot and push it to the
-   parent.
+   Given invariant #2, to create a snapshot S with a new feature X, it is
+   necessary to rebase that feature on top of the latest commit in the
+   child's `snap` branch, because until this rebase, the feature remains a fork.
+   Invariant #3 ensures that this rebase takes place as a result of
+   rebasing the parent repo onto the latest snapshot.
+
+   Once the child is rebased and pushed to the `snap` branch in the child repo,
+   the feature is now in the child master, and thus its commit hash can be
+   committed to this parent repo to create the snapshot, preserving invariant #2.
+
+   In practice, don't push to `snap` branch of the child unless you are also
+   ready to also create the snapshot and push it to the parent at
+   (approximately) the same time. If you really want to push something to the
+   child, push it to a different branch, that is not `snap`.
 
 ## Useful shell helpers
 
