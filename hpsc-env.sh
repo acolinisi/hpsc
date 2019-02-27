@@ -13,3 +13,4 @@ PATH=$PATH:$HPSC_ROOT/hpsc-bsp
 export PATH
 
 export LD_LIBRARY_PATH=$HPREFIX/lib64:$HPREFIX/lib
+export PKG_CONFIG_PATH=$HPREFIX/lib/pkgconfig
