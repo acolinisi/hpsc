@@ -135,52 +135,62 @@ Then, re-attach gdb:
 
     (gdb) target remote localhost:3037
 
-Rebuild code
-------------
+Rebuild code and memory images
+------------------------------
 
-The following shows an example of how to rebuild ATF binary,
-but the instructinos are analogous for all other binaries.
+To clean currently built binaries and Zebu memory images:
 
-First, make a copy of the code in your home directory:
+    make clean-hpps clean-hpps-zebu
 
-$ mkdir ~/hpsc-code
-$ cp -r /projects/boeing/isi/hpsc-root/arm-trusted-firmware ~/hpsc-code/
+To rebuild the binaries and the memory images:
 
-Create (or edit) environment settings file in the directory
-from where Qemu is run (see the very top of this guide)
-`~/qemu-run/qemu-env.sh` and add the path to the binary to it.
+    make hpps-zebu
 
-For ATF,
+The *striped* set of memory images for DDR0 and DDR1 in Verilog-H will be
+created at (note: both images must be loaded into their respective DDRs):
 
-    HPPS_FW=~/hpsc-code/arm-trusted-firmware/build/hpsc/debug/bl31.bin
-
-For U-boot,
-
-    HPPS_BL=~/hpsc-code/u-boot-a53/u-boot.bin
-
-For Linux kernel,
-
-    HPPS_KERN=~/hpsc-code/linux-hpsc/arch/arm64/boot/Image.gz
-    HPPS_DT=~/hpsc-code/linux-hpsc/arch/arm64/boot/dts/hpsc/hpsc.dtb
-
-For the names of the variables and where the binaries are located
-see `$HPSC_ROOT/qemu-env.sh`.
-
-Then, prepare the environment:
-
-    $ bash
-    $ source /projects/boeing/isi/hpsc-root/hpsc-env.sh
-
-Then, build, for ATF the build command is:
-
-    $ cd ~/hpsc-code/arm-trusted-firmware
-    $ make -j8 PLAT=hpsc DEBUG=1 bl31
-
-To disassemble the built ATF binary:
-
-    $ aarch64-poky-linux-objdump -D build/hpsc/debug/bl31/bl31.elf > bl31.S
+    bin/hpps/zebu/ddr{0,1}.vhex
 
 
-For U-boot and the Linux kernel the build command is:
+As an alternative to striped memory images, a single unstriped image
+can also be created (note: this one must be loaded into both DDRs):
 
-    $ make
+    make bin/hpps/zebu/mem.vhex
+
+
+Finally, as an alternative to Zebu memory images, the binaries for the
+software can be built with:
+
+    make hpps
+
+Or, individually by specifiying any subset of these targets:
+
+    make hpps-atf hpps-uboot hpps-linux
+
+The corresponding clean targets are the target prefix with `clean-`.
+
+
+To clean all binaries:
+
+    make clean-hpps
+
+Or, to clean individually specify any subset of these targets:
+
+    make clean-hpps-atf clean-hpps-uboot clean-hpps-linux
+
+
+The binaries will be generated at:
+
+    * ATF: arm-trusted-firmware/build/debug/hpsc/bl31.bin
+    * U-boot: u-boot-a53/u-boot.bin
+    * Linux kernel: bin/hpps/uImage
+    * Linux DT: linux-hpsc/arch/arm64/boot/dts/hpsc/hpsc.dtb
+
+To a built binary, invoke objdump on the binary in ELF format:
+
+    $ aarch64-poky-linux-objdump -D path/to/elf_binary > binary.S
+
+where the respective ELF format binaries are:
+    * ATF: arm-trusted-firmware/build/debug/hpsc/bl31/bl31.elf
+    * U-boot: u-boot-a53/u-boot
+    * Linux kernel: linux-hpsc/vmlinux
