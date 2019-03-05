@@ -10,7 +10,7 @@ SRAM_IMAGE_UTILS=${HPSC_HOST_UTILS_DIR}/sram-image-utils
 NAND_CREATOR=${HPSC_HOST_UTILS_DIR}/qemu-nand-creator
 
 # HPPS artifacts
-HPPS_BIN=bin/hpps # artifacts produced by top-level build
+HPPS_BIN=$HPSC_ROOT/bin/hpps # artifacts produced by top-level build
 HPPS_FW=$HPSC_ROOT/arm-trusted-firmware/build/hpsc/debug/bl31.bin
 HPPS_BL=$HPSC_ROOT/u-boot-a53/u-boot.bin
 HPPS_DT=$KERNEL_PATH/dts/hpsc/hpsc.dtb
