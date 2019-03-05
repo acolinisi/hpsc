@@ -1,3 +1,4 @@
 qemu-bld/
+bin/
 .*.swp
 .*.swo
