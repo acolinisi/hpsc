@@ -9,11 +9,12 @@ HPSC_HOST_UTILS_DIR=$HPSC_ROOT/hpsc-utils/host
 SRAM_IMAGE_UTILS=${HPSC_HOST_UTILS_DIR}/sram-image-utils
 NAND_CREATOR=${HPSC_HOST_UTILS_DIR}/qemu-nand-creator
 
-# Output files from the Yocto build
+# HPPS artifacts
+HPPS_BIN=bin/hpps # artifacts produced by top-level build
 HPPS_FW=$HPSC_ROOT/arm-trusted-firmware/build/hpsc/debug/bl31.bin
 HPPS_BL=$HPSC_ROOT/u-boot-a53/u-boot.bin
 HPPS_DT=$KERNEL_PATH/dts/hpsc/hpsc.dtb
-HPPS_KERN_BIN=$KERNEL_PATH/Image.gz
+HPPS_KERN=$HPPS_BIN/uImage
 HPPS_RAMDISK=$HPSC_ROOT/hpsc-bsp/poky/build/tmp/deploy/images/zcu102-zynqmp/rootfs.cpio.gz.u-boot
 
 # Output files from the hpsc-baremetal build
