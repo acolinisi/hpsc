@@ -14,10 +14,6 @@
 	path = hpsc-baremetal
 	url = git@github.com:ISI-apex/hpsc-baremetal.git
 	branch = snap
-[submodule "hpsc-bsp"]
-	path = hpsc-bsp
-	url = git@github.com:ISI-apex/hpsc-bsp.git
-	branch = snap
 [submodule "hpsc-utils"]
 	path = hpsc-utils
 	url = git@github.com:ISI-apex/hpsc-utils.git
