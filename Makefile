@@ -28,7 +28,7 @@ CROSS_M4=arm-none-eabi-
 HPPS_KERN_LOAD_ADDR=0x8048_0000 # (base + TEXT_OFFSET), where base must be aligned to 2MB
 HPPS_DRAM_ADDR=0x8000_0000
 
-HPPS_ZEBU_DDR_IMAGES=$(HPPS_ZEBU_BIN)/ddr0.vhex $(HPPS_ZEBU_BIN)/ddr1.vhex
+HPPS_ZEBU_DDR_IMAGES=$(HPPS_ZEBU_BIN)/ddr0.bin $(HPPS_ZEBU_BIN)/ddr1.bin
 
 # Address parsing function, takes addresses with _ separators
 addr=$(subst _,,$1)
@@ -94,7 +94,7 @@ $(BIN)/%/:
 TRCH_BM_ARGS=-C $(BARE_METAL)/trch
 $(BARE_METAL)/trch/bld/trch.elf: trch-bm
 trch-bm:
-	$(MAKE) $(TRCH_BM_ARGS) ARM_NONE_EABI=$(CROSS_M4)
+	$(MAKE) $(TRCH_BM_ARGS) CROSS_COMPILE=$(CROSS_M4)
 clean-trch-bm:
 	$(MAKE) $(TRCH_BM_ARGS) clean
 .PHONY: trch-bm clean-trch-bm
@@ -102,7 +102,7 @@ clean-trch-bm:
 RTPS_R52_BM_ARGS=-C $(BARE_METAL)/rtps
 $(BARE_METAL)/rtps/bld/rtps.uimg: rtps-bm
 rtps-r52-bm:
-	$(MAKE) $(RTPS_R52_BM_ARGS) ARM_NONE_EABI=$(CROSS_R52)
+	$(MAKE) $(RTPS_R52_BM_ARGS) CROSS_COMPILE=$(CROSS_R52)
 clean-rtps-r52-bm:
 	$(MAKE) $(RTPS_R52_BM_ARGS) clean
 .PHONY: rtps-r52-bm clean-rtps-r52-bm
