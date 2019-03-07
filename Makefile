@@ -1,14 +1,19 @@
 # Relative paths to reduce duplication throughout this file
-BSP=hpsc-bsp
-TOOLS=$(BSP)/tools
-HPPS_ZEBU=$(BSP)/zebu/hpps
-HPPS_ATF=arm-trusted-firmware
-HPPS_UBOOT=u-boot-a53
-HPPS_LINUX=linux-hpsc
+HPSC_UTILS=hpsc-utils
+TOOLS=$(HPSC_UTILS)/host
+CONF=$(HPSC_UTILS)/conf
+HPPS_ZEBU=$(CONF)/zebu/hpps
+HPPS=hpps
+RTPS=rtps
+RTPS_R52=$(RTPS)/r52
+RTPS_A53=$(RTPS)/a53
+HPPS_ATF=$(HPPS)/arm-trusted-firmware
+HPPS_UBOOT=$(HPPS)/u-boot
+HPPS_LINUX=$(HPPS)/linux
 HPPS_LINUX_BOOT=$(HPPS_LINUX)/arch/arm64/boot
-RTPS_R52_UBOOT=u-boot-r52
-RTPS_A53_UBOOT=u-boot-rtps-a53
-RTPS_A53_ATF=arm-trusted-firmware-rtps-a53
+RTPS_R52_UBOOT=$(RTPS_R52)/u-boot
+RTPS_A53_UBOOT=$(RTPS_A53)/u-boot
+RTPS_A53_ATF=$(RTPS_A53)/arm-trusted-firmware
 BARE_METAL=hpsc-baremetal
 # Directory for artifacts created by this top-level build
 BIN=bin
@@ -106,7 +111,7 @@ RTPS_R52_UBOOT_MAKE_ARGS=-C $(RTPS_R52_UBOOT) CROSS_COMPILE=$(CROSS_R52)
 $(RTPS_R52_UBOOT)/.config: $(RTPS_R52_UBOOT)/configs/hpsc_rtps_r52_defconfig
 	$(MAKE) $(RTPS_R52_UBOOT_MAKE_ARGS) hpsc_rtps_r52_defconfig
 $(RTPS_R52_UBOOT)/u-boot.bin: rtps-r52-uboot
-rtps-r52-uboot:
+rtps-r52-uboot: $(RTPS_R52_UBOOT)/.config
 	$(MAKE) $(RTPS_R52_UBOOT_MAKE_ARGS) u-boot.bin
 clean-rtps-r52-uboot:
 	$(MAKE) $(RTPS_R52_UBOOT_MAKE_ARGS) clean
@@ -125,7 +130,7 @@ clean-rtps-a53-uboot:
 .PHONY: rtps-a53-uboot clean-rtps-a53-uboot
 
 RTPS_A53_ATF_MAKE_ARGS=-C $(RTPS_A53_ATF) \
-	PLAT=hpsc_rtps_a53 CROSS_COMPILE=$(CROSS_A53)
+	PLAT=hpsc_rtps_a53 DEBUG=1 CROSS_COMPILE=$(CROSS_A53)
 $(RTPS_A53_ATF)/build/hpsc_rtps_a53/debug/bl31.bin: rtps-a53-atf
 rtps-a53-atf:
 	$(MAKE) $(RTPS_A53_ATF_MAKE_ARGS) bl31
@@ -133,7 +138,7 @@ clean-rtps-a53-atf:
 	$(MAKE) $(RTPS_A53_ATF_MAKE_ARGS) clean
 .PHONY: rtps-a53-atf clean-rtps-a53-atf
 
-HPPS_ATF_MAKE_ARGS=-C $(HPPS_ATF) PLAT=hpsc CROSS_COMPILE=$(CROSS_A53) 
+HPPS_ATF_MAKE_ARGS=-C $(HPPS_ATF) PLAT=hpsc DEBUG=1 CROSS_COMPILE=$(CROSS_A53)
 $(HPPS_ATF)/build/hpsc/debug/bl31.bin: hpps-atf
 hpps-atf:
 	$(MAKE) $(HPPS_ATF_MAKE_ARGS) bl31
@@ -173,11 +178,11 @@ $(HPPS_BIN)/uImage: $(HPPS_LINUX_BOOT)/Image.gz | $(HPPS_BIN)/
 # interface (via hpps-linux phony target shortcut), but not from the dependency
 # build of another artifact, for which the above recipes are used (a violation
 # of the invariant above). We could eliminate this by adding phony targets for
-# Image.gz and hpsc.dtb and have hpps-linux-inner target and the non-phony
+# Image.gz and hpsc.dtb and have hpps-linux target and the non-phony
 # targets for Image.gz, hpsc.dtb artifacts depend on those phony targets. Meh.
-hpps-linux-inner: $(HPPS_LINUX)/.config
+hpps-linux: $(HPPS_LINUX)/.config
 	$(MAKE) $(HPPS_LINUX_MAKE_ARGS)
-hpps-linux: hpps-linux-inner $(HPPS_BIN)/uImage
+	$(MAKE) $(HPPS_BIN)/uImage
 clean-hpps-linux:
 	$(MAKE) $(HPPS_LINUX_MAKE_ARGS) mrproper
 	rm -f $(HPPS_BIN)/uImage

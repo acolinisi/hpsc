@@ -4,9 +4,9 @@ Holds references to commits of all repositories of HPSC project.
 Each commit in this repository designates a consistent snapshot
 of the HPSC codebase, i.e. an internal release.
 
-Clone this repository with the recursive flag:
+Clone this repository recusively to clone all submodules:
 
-    $ git clone -r git@github.com:acolinisi/hpsc.git
+    $ git clone --recursive git@github.com:acolinisi/hpsc.git
 
 ## Running Qemu from the parent repo tree
 
