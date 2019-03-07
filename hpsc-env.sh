@@ -9,7 +9,7 @@ PATH=$PATH:$HPREFIX/sbin:$HPREFIX/bin
 PATH=$PATH:$ROOT/opt/gcc-arm-none-eabi-7-2018-q2-update/bin
 PATH=$PATH:$POKY
 PATH=$PATH:$HPSC_ROOT/hpps/u-boot/tools
-PATH=$PATH:$HPSC_ROOT/hpsc-bsp
+PATH=$PATH:$HPSC_ROOT/hpsc-utils/host
 export PATH
 
 export LD_LIBRARY_PATH=$HPREFIX/lib64:$HPREFIX/lib
