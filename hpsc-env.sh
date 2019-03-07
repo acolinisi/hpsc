@@ -1,5 +1,5 @@
 ROOT=/projects/boeing/isi
-export HPSC_ROOT=$ROOT/hpsc-root
+export HPSC_ROOT=$ROOT/hpsc
 HPREFIX=$ROOT/usr
 POKY=$ROOT/opt/poky/2.4.3/sysroots/x86_64-pokysdk-linux/usr/bin/aarch64-poky-linux
 
