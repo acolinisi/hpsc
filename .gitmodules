@@ -1,7 +1,3 @@
-[submodule "linux-hpsc"]
-	path = hpps/linux
-	url = git@github.com:ISI-apex/linux-hpsc.git
-	branch = snap
 [submodule "qemu"]
 	path = qemu
 	url = git@github.com:ISI-apex/qemu.git
@@ -22,15 +18,19 @@
 	path = hpsc-utils
 	url = git@github.com:ISI-apex/hpsc-utils.git
 	branch = snap
-[submodule "u-boot-r52"]
+[submodule "rtps/r52/u-boot"]
 	path = rtps/r52/u-boot
 	url = git@github.com:ISI-apex/u-boot.git
 	branch = snap
-[submodule "u-boot-a53"]
+[submodule "hpps/arm-trusted-firmware"]
+	path = hpps/arm-trusted-firmware
+	url = git@github.com:ISI-apex/arm-trusted-firmware.git
+	branch = snap
+[submodule "hpps/u-boot"]
 	path = hpps/u-boot
 	url = git@github.com:ISI-apex/u-boot.git
 	branch = snap
-[submodule "arm-trusted-firmware"]
-	path = hpps/arm-trusted-firmware
-	url = git@github.com:ISI-apex/arm-trusted-firmware.git
+[submodule "hpps/linux"]
+	path = hpps/linux
+	url = git@github.com:ISI-apex/linux-hpsc.git
 	branch = snap
