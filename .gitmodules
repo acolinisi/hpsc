@@ -30,3 +30,6 @@
 	path = hpps/linux
 	url = git@github.com:ISI-apex/linux-hpsc.git
 	branch = snap
+[submodule "hpps/userspace/busybox"]
+	path = hpps/userspace/busybox
+	url = git://busybox.net/busybox.git
