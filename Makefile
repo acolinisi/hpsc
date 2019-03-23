@@ -1,8 +1,11 @@
 # Relative paths to reduce duplication throughout this file
+QEMU=qemu
+QEMU_DT=qemu-devicetrees
 HPSC_UTILS=hpsc-utils
 TOOLS=$(HPSC_UTILS)/host
 CONF=$(HPSC_UTILS)/conf
-HPPS_INITRAMFS=$(HPSC_UTILS)/hpps/initramfs
+HPPS_UTILS=$(HPSC_UTILS)/hpps
+HPPS_INITRAMFS=$(HPPS_UTILS)/initramfs
 HPPS_ZEBU=$(CONF)/zebu/hpps
 HPPS_CONF=$(CONF)/hpps
 HPPS_BUSYBOX_CONF=$(HPPS_CONF)/busybox
@@ -23,6 +26,14 @@ BARE_METAL=hpsc-baremetal
 BIN=bin
 HPPS_BIN=$(BIN)/hpps
 HPPS_ZEBU_BIN=$(HPPS_BIN)/zebu
+QEMU_BLD=$(BIN)/qemu-bld
+
+# Profiles
+HPPS_DEFAULT=$(HPPS_BIN)/default
+HPPS_FTRACE_EXT=$(HPPS_BIN)/ftrace-extractor
+
+HPPS_DEFAULT_INITRAMFS=$(HPPS_DEFAULT)/initramfs
+HPPS_FTRACE_EXT_INITRAMFS=$(HPPS_FTRACE_EXT)/initramfs
 
 CROSS_A53=aarch64-poky-linux-
 CROSS_A53_LINUX=aarch64-linux-gnu-
@@ -30,8 +41,12 @@ CROSS_R52=arm-none-eabi-
 CROSS_M4=arm-none-eabi-
 
 # Settings for build artifacts produced by this top-level builder
-HPPS_KERN_LOAD_ADDR=0x8048_0000 # (base + TEXT_OFFSET), where base must be aligned to 2MB
+HPPS_KERN_LOAD_ADDR=0x8068_0000 # (base + TEXT_OFFSET), where base must be aligned to 2MB
 HPPS_DRAM_ADDR=0x8000_0000
+
+# Build Qemu s.t. its GDB stub points to the given target CPU cluster:
+# TRCH=0, RTPS_R52=1, RTPS_A53=2, HPPS=3
+QEMU_GDB_TARGET_CLUSTER=3
 
 HPPS_ZEBU_DDR_IMAGES=$(HPPS_ZEBU_BIN)/ddr0.bin $(HPPS_ZEBU_BIN)/ddr1.bin
 
@@ -44,9 +59,12 @@ addr=$(subst _,,$1)
 # e.g. including regeneration of config, if you want any other clean or partial
 # build, then use the build system of the respective component directly.
 
-all: trch rtps hpps
-clean: clean-trch clean-rtps clean-hpps
-.PHONY: all clean
+all: qemu qdt target
+clean: clean-qemu clean-qdt clean-target
+
+target: trch rtps hpps
+clean-target: clean-trch clean-rtps clean-hpps
+.PHONY: target clean-target
 
 trch: trch-bm
 clean-trch: clean-trch-bm
@@ -57,7 +75,8 @@ clean-rtps: clean-rtps-r52 clean-rtps-a53
 .PHONY: rtps clean-rtps
 
 hpps: hpps-atf hpps-uboot hpps-linux hpps-initramfs
-clean-hpps: clean-hpps-atf clean-hpps-uboot clean-hpps-linux
+clean-hpps: clean-hpps-atf clean-hpps-uboot clean-hpps-linux \
+	clean-hpps-busybox clean-hpps-initramfs
 .PHONY: hpps clean-hpps
 
 rtps-r52: rtps-r52-uboot rtps-r52-bm
@@ -95,6 +114,27 @@ $(BIN)/%/:
 # hinders rule legibility because dependencies can no longer be explicit
 # artifacts (they are phony targets) and the recipies can no longer refer to
 # dependencies (e.g. via $<).
+
+QEMU_ARGS=-C $(QEMU_BLD) CFLAGS+=-DGDB_TARGET_CLUSTER=$(QEMU_GDB_TARGET_CLUSTER)
+$(QEMU_BLD)/aarch64-softmmu/qemu-system-aarch64: qemu
+
+$(QEMU_BLD)/config.status: $(QEMU_BLD)/
+	cd $(QEMU_BLD) && ../../$(QEMU)/configure \
+		--target-list=aarch64-softmmu --enable-fdt \
+		--disable-kvm --disable-xen --enable-debug
+qemu: $(QEMU_BLD)/config.status
+	$(MAKE) $(QEMU_ARGS)
+clean-qemu:
+	$(MAKE) $(QEMU_ARGS) clean
+.PHONY: qemu clean-qemu
+
+QDT_ARGS=-C $(QEMU_DT)
+$(QEMU_DT)/LATEST/SINGLE_ARCH/hpsc-arch.dtb: qdt
+qdt:
+	$(MAKE) $(QDT_ARGS)
+clean-qdt:
+	$(MAKE) $(QDT_ARGS) clean
+.PHONY: qdt clean-qdt
 
 TRCH_BM_ARGS=-C $(BARE_METAL)/trch
 $(BARE_METAL)/trch/bld/trch.elf: trch-bm
@@ -195,29 +235,48 @@ clean-hpps-linux:
 
 
 HPPS_BUSYBOX_ARGS=-C $(HPPS_BUSYBOX) CROSS_COMPILE=$(CROSS_A53_LINUX) \
-		CONFIG_PREFIX="$(abspath $(HPPS_INITRAMFS))"
+		CONFIG_PREFIX="$(abspath $(HPPS_DEFAULT_INITRAMFS))"
 $(HPPS_BUSYBOX)/.config: $(HPPS_BUSYBOX_CONF)/hpsc_hpps_miniconf
 	$(MAKE) $(HPPS_BUSYBOX_ARGS) allnoconfig KCONFIG_ALLCONFIG="$(abspath $<)"
-$(HPPS_BUSYBOX)/busybox: $(HPPS_BUSYBOX)/.config
+$(HPPS_BUSYBOX)/busybox: hpps-busybox
+hpps-busybox: $(HPPS_BUSYBOX)/.config
 	$(MAKE) $(HPPS_BUSYBOX_ARGS)
+clean-hpps-busybox:
+	$(MAKE) $(HPPS_BUSYBOX_ARGS) clean
+	rm -f $(HPPS_BUSYBOX)/.config
+.PHONY: hpps-busybox clean-hpps-busybox
 
-hpps-busybox: $(HPPS_BUSYBOX)/busybox
-	$(MAKE) $(HPPS_BUSYBOX_ARGS) install
-.PHONY: hpps-busybox
+HPPS_FAKEROOT_ENV=$(abspath $(HPPS_BIN)/initramfs.fakeroot)
+$(HPPS_DEFAULT)/initramfs.cpio: | $(HPPS_DEFAULT)/
+	fakeroot -s $(HPPS_FAKEROOT_ENV) \
+		cp -r $(HPPS_INITRAMFS) $(HPPS_DEFAULT)/
+	cd $(HPPS_DEFAULT_INITRAMFS) && \
+		fakeroot -i $(HPPS_FAKEROOT_ENV) -s $(HPPS_FAKEROOT_ENV) \
+			$(abspath $(HPPS_UTILS))/initramfs.sh
+	fakeroot -i $(HPPS_FAKEROOT_ENV) -s $(HPPS_FAKEROOT_ENV) \
+		$(MAKE) $(HPPS_BUSYBOX_ARGS) install
+	cd $(HPPS_DEFAULT_INITRAMFS) && find . | \
+		fakeroot -i $(HPPS_FAKEROOT_ENV) -s $(HPPS_FAKEROOT_ENV) \
+			cpio -R root:root -c -o -O "$(abspath $@)"
 
-# TODO: dependency: autogenerate rules file with .cpio depending on each file
-$(HPPS_BIN)/initramfs.cpio:
-	cd $(HPPS_INITRAMFS) && find . | cpio -R root:root -c -o -O "$(abspath $@)"
-
-$(HPPS_BIN)/initramfs.uimg: $(HPPS_BIN)/initramfs.cpio.gz
+$(HPPS_BIN)/%/initramfs.uimg: $(HPPS_BIN)/%/initramfs.cpio.gz
 	mkimage -T ramdisk -C gzip -A arm64 -n "Initramfs" -d "$<" "$@"
 
 hpps-initramfs: hpps-busybox
-	$(MAKE) $(HPPS_BIN)/initramfs.uimg
+	$(MAKE) $(HPPS_DEFAULT)/initramfs.uimg
 clean-hpps-initramfs:
-	rm -f $(HPPS_BIN)/initramfs.{uimg,cpio,cpio.gz}
+	rm -rf $(HPPS_DEFAULT)/initramfs.{uimg,cpio,cpio.gz} $(HPPS_DEFAULT_INITRAMFS)
 .PHONY: hpps-initramfs clean-hpps-initramfs
 
+$(HPPS_FTRACE_EXT)/initramfs.cpio: $(HPPS_DEFAULT)/initramfs.cpio | $(HPPS_FTRACE_EXT)/
+	fakeroot -i $(HPPS_FAKEROOT_ENV) -s $(HPPS_FAKEROOT_ENV) \
+		cp -r $(HPPS_DEFAULT_INITRAMFS) $(HPPS_FTRACE_EXT)/
+	cd $(HPPS_FTRACE_EXT_INITRAMFS) && \
+		fakeroot -i $(HPPS_FAKEROOT_ENV) -s $(HPPS_FAKEROOT_ENV) \
+			ln -sf init-extract-ftrace init
+	cd $(HPPS_FTRACE_EXT_INITRAMFS)/ && find . | \
+		fakeroot -i $(HPPS_FAKEROOT_ENV) -s $(HPPS_FAKEROOT_ENV) \
+			cpio -R root:root -c -o -O "$(abspath $@)"
 
 hpps-zebu: $(HPPS_ZEBU_DDR_IMAGES)
 .PHONY: hpps-zebu
