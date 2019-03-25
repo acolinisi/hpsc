@@ -66,8 +66,8 @@ trch: trch-bm
 clean-trch: clean-trch-bm
 .PHONY: trch clean-trch
 
-rtps: rtps-r52 rtps-a53
-clean-rtps: clean-rtps-r52 clean-rtps-a53
+rtps: rtps-r52 rtps-a53 rtps-bm
+clean-rtps: clean-rtps-r52 clean-rtps-a53 clean-rtps-r52-bm
 .PHONY: rtps clean-rtps
 
 hpps: hpps-atf hpps-uboot hpps-linux hpps-initramfs
@@ -84,7 +84,7 @@ clean-rtps-a53: clean-rtps-atf clean-rtps-a53-uboot
 .PHONY: rtps-a53 clean-rtps-a53
 
 bm: trch-bm rtps-r52-bm
-clean-bm: clean-trch-bm clean-rtps-bm
+clean-bm: clean-trch-bm clean-rtps-r52-bm
 .PHONY: bm clean-bm
 
 $(BLD)/%/:
@@ -224,8 +224,8 @@ HPPS_LINUX_ARGS=ARCH=arm64 CROSS_COMPILE=$(CROSS_A53)
 $(HPPS_LINUX)/.config: $(HPPS_LINUX)/arch/arm64/configs/hpsc_defconfig
 	$(MAKE) -C $(HPPS_LINUX) $(HPPS_LINUX_ARGS) hpsc_defconfig
 
-$(HPPS_LINUX_BOOT)/Image.gz: $(HPPS_LINUX)/.config
-	$(MAKE) -C $(HPPS_LINUX) $(HPPS_LINUX_ARGS) Image.gz
+$(HPPS_LINUX_BOOT)/Image: $(HPPS_LINUX)/.config
+	$(MAKE) -C $(HPPS_LINUX) $(HPPS_LINUX_ARGS) Image
 
 # Note: need to sequence, otherwise whether we have two targets at same
 # priority or we have one recipe with multiple artifacts, in both cases will be
