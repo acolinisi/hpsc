@@ -1,4 +1,4 @@
 hpsc-env.sh
-bin/
+bld/
 .*.swp
 .*.swo
