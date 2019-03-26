@@ -8,68 +8,8 @@ Clone this repository recusively to clone all submodules:
 
     $ git clone --recursive git@github.com:acolinisi/hpsc.git
 
-## Running Qemu from the parent repo tree
-
-Set `$HPSC_ROOT` to the absolute path of the checked out
-working copy of this parent repo:
-
-    $ export HPSC_ROOT=/path/to/hpsc-parent-repo
-
-Add `hpsc-bsp` which holds the run script to PATH for convenience,
-
-    $ export PATH=$PATH:$HPSC_ROOT/hpsc-bsp
-
-
-Create a directory which will store artifacts associated with a Qemu run,
-and launch Qemu from this directory. Preferably place the run directory outside
-of this source tree, since it would be picked up as untracked by git status,
-
-    $ mkdir ~/qemu-run
-    $ cd ~/qemu-run
-    $ run-qemu.sh
-
-The run script `run-qemu.sh` sources environment settings ( paths to host tools
-and target binaries) from `qemu-env.sh` located in:
-
-* `$HPSC_ROOT/`
-* `$PWD` (current directory, i.e. the run directory, e.g. `~/qemu-run`)
-
-The default settings should work out with the run command above out of the box.
-
-If you wish to override any variables in `$HPSC_ROOT/qemu-env.sh`, then
-create `~/qemu-run/qemu-env.sh` and define the variables you wish to override.
-
-To temporarily add arguments to QEMU command line, add them to QEMU\_ARGS
-environment variable, with the following statement, either executed on the
-cmomand line or added to `qemu-env.sh` in the run directory:
-
-    $ export QEMU_ARGS=(-etrace-flags mem -etrace /tmp/trace)
-
-### Multiuser setup with shared parent repository copy
-
-Multiple users may run Qemu using one checked out copy of this parent repo,
-without write access to the parent repo directory. The shared copy would
-contain built artifacts. If a user wishes to modify different target code, the
-user may create a copy of the respective repo and point Qemu to the binaries
-produced in the local copy.
-
-To modify any part of the software, the user may create a private local
-copy of the respective repository, modify and build it locally, and point Qemu
-to the binaries produced in the local copy, by setting variables
-in `~/qemu-run/qemu-env.sh` that store the paths to target binaries.
-
-For example, to modify ATF (while re-using everything else), first copy
-it from the parent repo (or alternatively clone the respective git repository):
-
-    $ mkdir hpsc-sw/
-    $ cp -r $HPSC_ROOT/arm-trusted-firmware ~/hpsc-sw/
-
-Then, override the path to the target binary by adding to `~/qemu-run/qemu-env.sh`:
-
-    HPPS_FW=~/hpsc-sw/arm-trusted-firmware/build/hpsc/debug/bl31.bin
-
-For the variable name and for the path of each target artifact relative to the
-respective source tree, see `$HPSC_ROOT/qemu-env.sh`.
+For building and running, see the generic instructions in
+[hpsc-utils/doc/README.md](hpsc-utils/doc/README.md).
 
 ## Development workflow
 
