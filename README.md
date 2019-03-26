@@ -9,7 +9,7 @@ Clone this repository recusively to clone all submodules:
     $ git clone --recursive git@github.com:acolinisi/hpsc.git
 
 For building and running, see the generic instructions in
-`hpsc-utils/doc/README`.
+[hpsc-utils/doc/README.md](hpsc-utils/doc/README.md).
 
 ## Development workflow
 
