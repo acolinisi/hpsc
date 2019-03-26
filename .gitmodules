@@ -32,4 +32,4 @@
 	branch = snap
 [submodule "hpps/userspace/busybox"]
 	path = hpps/userspace/busybox
-	url = git://busybox.net/busybox.git
+	url = git@github.com:acolinisi/busybox.git
