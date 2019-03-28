@@ -7,7 +7,7 @@
 	url = git@github.com:ISI-apex/qemu-devicetrees.git
 	branch = snap
 [submodule "hpsc-baremetal"]
-	path = hpsc-baremetal
+	path = ssw/hpsc-baremetal
 	url = git@github.com:ISI-apex/hpsc-baremetal.git
 	branch = snap
 [submodule "hpsc-utils"]
@@ -15,21 +15,21 @@
 	url = git@github.com:ISI-apex/hpsc-utils.git
 	branch = snap
 [submodule "rtps/r52/u-boot"]
-	path = rtps/r52/u-boot
+	path = ssw/rtps/r52/u-boot
 	url = git@github.com:ISI-apex/u-boot.git
 	branch = snap
 [submodule "hpps/arm-trusted-firmware"]
-	path = hpps/arm-trusted-firmware
+	path = ssw/hpps/arm-trusted-firmware
 	url = git@github.com:ISI-apex/arm-trusted-firmware.git
 	branch = snap
 [submodule "hpps/u-boot"]
-	path = hpps/u-boot
+	path = ssw/hpps/u-boot
 	url = git@github.com:ISI-apex/u-boot.git
 	branch = snap
 [submodule "hpps/linux"]
-	path = hpps/linux
+	path = ssw/hpps/linux
 	url = git@github.com:ISI-apex/linux-hpsc.git
 	branch = snap
 [submodule "hpps/userspace/busybox"]
-	path = hpps/userspace/busybox
+	path = ssw/hpps/userspace/busybox
 	url = git@github.com:acolinisi/busybox.git
