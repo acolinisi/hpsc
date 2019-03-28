@@ -1,9 +1,9 @@
 [submodule "qemu"]
-	path = qemu
+	path = sdk/qemu
 	url = git@github.com:ISI-apex/qemu.git
 	branch = snap
 [submodule "qemu-devicetrees"]
-	path = qemu-devicetrees
+	path = sdk/qemu-devicetrees
 	url = git@github.com:ISI-apex/qemu-devicetrees.git
 	branch = snap
 [submodule "hpsc-baremetal"]
