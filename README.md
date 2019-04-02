@@ -13,6 +13,18 @@ For building and running, see the generic instructions in
 
 ## Development workflow
 
+Source some useful shell aliases and helpers for common git operations:
+
+    $ source git-alias.sh
+
+Notable aliases:
+
+* `gms`: git submodule summary: show status of changes relative to ref in parent
+* `gnp`: for each submodule print commits in the current branch not in the
+  respective branch in the remote (by default 'origin'), i.e. new unpushed.
+* `gmk`: for each submdule, checkout the given branch if current hash matches;
+   useful for re-attaching child repos to a branch after 'git sumodule update'.
+
 After work in child repos has been committed and pushed,
 check which repos have been modified:
 
@@ -148,22 +160,3 @@ done, so have to observe manually whenever pushing.
    ready to also create the snapshot and push it to the parent at
    (approximately) the same time. If you really want to push something to the
    child, push it to a different branch, that is not `snap`.
-
-## Useful shell helpers
-
-Consider adding shortcuts and functions like these to your ~/.bashrc:
-
-    alias gs='git status'
-    alias gd='git diff'
-    alias gds='git diff --staged'
-    alias gm='git submodule'
-    alias gms='git submodule summary'
-    alias gmu='git submodule update'
-
-Print commits in the current branch of each child repo unpushed to the respective
-branch in the remote named 'origin':
-
-    gnp() {
-        local gbc="git rev-parse --abbrev-ref HEAD"
-        git submodule foreach git log --oneline 'origin/$('$gbc')..$('$gbc')'
-    }
