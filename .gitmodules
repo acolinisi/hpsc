@@ -33,3 +33,9 @@
 [submodule "hpps/userspace/busybox"]
 	path = ssw/hpps/userspace/busybox
 	url = git@github.com:acolinisi/busybox.git
+[submodule "ssw/rtps/a53/arm-trusted-firmware"]
+	path = ssw/rtps/a53/arm-trusted-firmware
+	url = git@github.com:ISI-apex/arm-trusted-firmware.git
+[submodule "ssw/rtps/a53/u-boot"]
+	path = ssw/rtps/a53/u-boot
+	url = git@github.com:ISI-apex/u-boot.git
