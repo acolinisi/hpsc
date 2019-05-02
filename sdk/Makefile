@@ -1,1 +1,1 @@
-hpsc-utils/make/Makefile.sdk
+hpsc-sdk-tools/make/Makefile.sdk
