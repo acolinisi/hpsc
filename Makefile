@@ -1,1 +1,1 @@
-hpsc-utils/make/Makefile.hpsc
+ssw/hpsc-utils/make/Makefile.hpsc
