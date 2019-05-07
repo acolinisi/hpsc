@@ -155,12 +155,12 @@ Rebuild code and memory images
 
 To clean currently built binaries and Zebu memory images:
 
-    make PROF=zebu hpps-clean hpps-zebu-clean
+    make PROF=zebu hpps-clean zebu-hpps-clean
 
 To rebuild the binaries and the memory images:
 
     make PROF=zebu
-    make PROF=zebu hpps-zebu
+    make PROF=zebu zebu-hpps
 
 A single unstriped image in binary format will be created at (note: this one
 must be loaded into both DDRs):
