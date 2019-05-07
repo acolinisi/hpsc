@@ -1,15 +1,14 @@
 HOW TO for running the Qemu emulator on the SCS server:
 
-Prepare environment, creating a directory in your user home directory:
+Prepare environment:
 
     $ bash
-    $ mkdir qemu-run
-    $ cd qemu-run
-    $ source /projects/boeing/isi/hpsc-root/hpsc-env.sh
+    $ cd /projects/boeing/isi/hpsc/
+    $ source sdk/bld/env.sh
 
 Launch Qemu and tell it to wait for connection from debugger with `-S`:
 
-    $ run-qemu.sh -S
+    $ make PROF=zebu run
 
 Look for the message:
 
@@ -36,19 +35,20 @@ target binary (in ELF format, which may be a different file from the binary
 that is loaded into target memory in Qemu/Zebu), and attach to Qemu:
 
     $ bash
-    $ source /projects/boeing/isi/hpsc-root/hpsc-env.sh
+    $ cd /projects/boeing/isi/hpsc/
+    $ source sdk/bld/env.sh
 
 To debug the ATF binary:
 
-    $ aarch64-poky-linux-gdb $HPSC_ROOT/arm-trusted-firmware/build/hpsc/debug/bl31/bl31.elf 
+    $ aarch64-poky-linux-gdb hpps/arm-trusted-firmware/build/hpsc/debug/bl31/bl31.elf 
 
 Or, to debug the U-boot binary:
 
-    $ aarch64-poky-linux-gdb $HPSC_ROOT/u-boot-a53/u-boot
+    $ aarch64-poky-linux-gdb hpps/u-boot-a53/u-boot
 
 Or, to debug Linux kernel binary:
 
-    $ aarch64-poky-linux-gdb $HPSC_ROOT/linux-hpsc/vmlinux
+    $ aarch64-poky-linux-gdb hpps/linux/vmlinux
 
 Then, attach the GDB client to the Qemu emulator, replacing 3037 in the example
 below with GDB_PORT from run-qemu.sh output (see instructions above):
@@ -140,50 +140,53 @@ Rebuild code and memory images
 
 To clean currently built binaries and Zebu memory images:
 
-    make clean-hpps clean-hpps-zebu
+    make PROF=zebu hpps-clean hpps-zebu-clean
 
 To rebuild the binaries and the memory images:
 
-    make hpps-zebu
+    make PROF=zebu
+    make PROF=zebu hpps-zebu
 
-The *striped* set of memory images for DDR0 and DDR1 in Verilog-H will be
-created at (note: both images must be loaded into their respective DDRs):
+A single unstriped image in binary format will be created at (note: this one
+must be loaded into both DDRs):
 
-    bin/hpps/zebu/ddr{0,1}.vhex
+    bld/prof/zebu/zebu/mem.bin
 
+As an alternative, the *striped* set of memory images for DDR0 and DDR1 in
+binary format will be created at (note: both images must be loaded into their
+respective DDRs):
 
-As an alternative to striped memory images, a single unstriped image
-can also be created (note: this one must be loaded into both DDRs):
+    make PROF=zebu bld/prof/zebu/zebu/prof.hpps.ddr.x.bin
 
-    make bin/hpps/zebu/mem.vhex
+The extension .bin can be replaced with .vhex for generating images
+in Verilog-H textual hex format.
 
-
-Finally, as an alternative to Zebu memory images, the binaries for the
+Also, as an alternative to Zebu memory images, the binaries for the
 software can be built with:
 
-    make hpps
+    make PROF=zebu hpps
 
 Or, individually by specifiying any subset of these targets:
 
-    make hpps-atf hpps-uboot hpps-linux
+    make PROF=zebu hpps-atf hpps-uboot hpps-linux
 
 The corresponding clean targets are the target prefix with `clean-`.
 
 
 To clean all binaries:
 
-    make clean-hpps
+    make PROF=zebu hpps-clean
 
 Or, to clean individually specify any subset of these targets:
 
-    make clean-hpps-atf clean-hpps-uboot clean-hpps-linux
+    make PROF=zebu hpps-atf-clean hpps-uboot-clean hpps-linux-clean
 
 
 The binaries will be generated at:
 
-    * ATF: arm-trusted-firmware/build/debug/hpsc/bl31.bin
-    * U-boot: u-boot-a53/u-boot.bin
-    * Linux kernel: bin/hpps/uImage
+    * ATF: hpps/arm-trusted-firmware/build/debug/hpsc/bl31.bin
+    * U-boot: hpps/u-boot/u-boot.bin
+    * Linux kernel: bld/prof/zebu/hpps/uImage
     * Linux DT: linux-hpsc/arch/arm64/boot/dts/hpsc/hpsc.dtb
 
 To a built binary, invoke objdump on the binary in ELF format:
@@ -191,6 +194,6 @@ To a built binary, invoke objdump on the binary in ELF format:
     $ aarch64-poky-linux-objdump -D path/to/elf_binary > binary.S
 
 where the respective ELF format binaries are:
-    * ATF: arm-trusted-firmware/build/debug/hpsc/bl31/bl31.elf
-    * U-boot: u-boot-a53/u-boot
-    * Linux kernel: linux-hpsc/vmlinux
+    * ATF: hpps/arm-trusted-firmware/build/debug/hpsc/bl31/bl31.elf
+    * U-boot: hpps/u-boot/u-boot
+    * Linux kernel: hpps/linux/vmlinux
