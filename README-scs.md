@@ -1,10 +1,25 @@
 HOW TO for running the Qemu emulator on the SCS server:
 
-Prepare environment:
+Get the source to a directory of your choice:
+
+    $ git clone --recursive /projects/boeing/isi/hpsc
+
+Build the sysroot and build the SDK against that sysroot:
 
     $ bash
-    $ cd /projects/boeing/isi/hpsc/
+    $ cd hpsc
+    $ make sdk-deps-sysroot
+
+Prepare environment (do this every time you start a new shell):
+
+    $ bash
+    $ cd hpsc
     $ source sdk/bld/env.sh
+    $ alias make=make -j20
+
+Build the software stack for the target:
+
+    $ make PROF=zebu
 
 Launch Qemu and tell it to wait for connection from debugger with `-S`:
 
@@ -35,7 +50,7 @@ target binary (in ELF format, which may be a different file from the binary
 that is loaded into target memory in Qemu/Zebu), and attach to Qemu:
 
     $ bash
-    $ cd /projects/boeing/isi/hpsc/
+    $ cd hpsc
     $ source sdk/bld/env.sh
 
 To debug the ATF binary:
