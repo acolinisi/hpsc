@@ -11,7 +11,7 @@
 	url = git@github.com:ISI-apex/hpsc-baremetal.git
 	branch = snap
 [submodule "hpsc-utils"]
-	path = hpsc-utils
+	path = ssw/hpsc-utils
 	url = git@github.com:ISI-apex/hpsc-utils.git
 	branch = snap
 [submodule "rtps/r52/u-boot"]
@@ -33,3 +33,21 @@
 [submodule "hpps/userspace/busybox"]
 	path = ssw/hpps/userspace/busybox
 	url = git@github.com:acolinisi/busybox.git
+[submodule "ssw/rtps/a53/arm-trusted-firmware"]
+	path = ssw/rtps/a53/arm-trusted-firmware
+	url = git@github.com:ISI-apex/arm-trusted-firmware.git
+[submodule "ssw/rtps/a53/u-boot"]
+	path = ssw/rtps/a53/u-boot
+	url = git@github.com:ISI-apex/u-boot.git
+[submodule "sdk/hpsc-sdk-tools"]
+	path = sdk/hpsc-sdk-tools
+	url = git@github.com:acolinisi/hpsc-sdk-tools.git
+[submodule "ssw/hpps/yocto/meta-openembedded"]
+	path = ssw/hpps/yocto/meta-openembedded
+	url = https://github.com/openembedded/meta-openembedded.git
+[submodule "ssw/hpps/yocto/poky"]
+	path = ssw/hpps/yocto/poky
+	url = https://git.yoctoproject.org/git/poky
+[submodule "ssw/hpps/yocto/meta-hpsc"]
+	path = ssw/hpps/yocto/meta-hpsc
+	url = git@github.com:ISI-apex/meta-hpsc.git
