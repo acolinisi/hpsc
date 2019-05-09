@@ -28,7 +28,7 @@
 	branch = snap
 [submodule "hpps/linux"]
 	path = ssw/hpps/linux
-	url = /projects/boeing/isi/hpsc/ssw/hpps/linux-hpsc
+	url = /projects/boeing/isi/hpsc/ssw/hpps/linux
 	branch = snap
 [submodule "hpps/userspace/busybox"]
 	path = ssw/hpps/userspace/busybox
