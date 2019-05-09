@@ -1,5 +1,8 @@
 # HOW TO for running the Qemu emulator on the SCS server:
 
+Get the source and build the SDK
+--------------------------------
+
 Get the source by cloning `zebu` branch to a directory of your choice:
 
     $ git clone --recursive -b zebu /projects/boeing/isi/hpsc
@@ -11,24 +14,21 @@ Enter the Bash shell and enter the repository directory and setup parallel make
     $ cd hpsc
     $ alias make="make -j20"
 
-Before building the SDK, on an offline system (SCS server is offline), fetch
-the source tarballs:
+Build the sysroot and build the SDK against that sysroot (when `FETCH_CACHE` is
+given, source taballs are fetched from there instead of from the Internet):
 
-    $ mkdir -p sdk/bld/ sdk/hpsc-sdk-tools/sysroot/bld/
-    $ rsync -aq /projects/boeing/isi/hpsc/sdk/bld/fetch sdk/bld/
-    $ rsync -aq /projects/boeing/isi/hpsc/sdk/hpsc-sdk-tools/sysroot/bld/fetch sdk/hpsc-sdk-tools/sysroot/bld/
+    $ make FETCH_CACHE=/projects/boeing/isi/hpsc sdk-deps-sysroot
 
-Build the sysroot and build the SDK against that sysroot:
+Load the SDK into the environment (do this every time you start a new shell):
 
-    $ make sdk-deps-sysroot
-
-Prepare environment (do this every time you start a new shell):
-
-    $ bash
-    $ cd hpsc
     $ source sdk/bld/env.sh
 
-Change to `ssw/` directory (or, alternatively, prefix all targets with `ssw=`):
+Build the system software stack and Zebu memory images
+------------------------------------------------------
+
+Assumes `bash` shell and that SDK was loaded into the environment (see above).
+
+Change to `ssw/` directory (or, alternatively, prefix all targets with `ssw-`):
 
     $ cd ssw
 
@@ -38,27 +38,54 @@ Build the software stack for the target:
 
 To also build memory images for loading into Zebu:
 
-    make PROF=zebu zebu-hpps
+    $ make PROF=zebu zebu-hpps
 
 A single unstriped image in binary format will be created at (note: this one
-must be loaded into both DDRs):
-
-    bld/prof/zebu/zebu/mem.bin
+must be loaded into both DDRs): `bld/prof/zebu/zebu/mem.bin`.
 
 As an alternative, to build *striped* set of memory images for DDR0 and DDR1 in
 binary format (note: both images must be loaded into their respective DDRs):
 
     make PROF=zebu bld/prof/zebu/zebu/prof.hpps.ddr.x.bin
 
-In both of the above targets the extension .bin can be replaced with .vhex for
-generating images in Verilog-H textual hex format.
+In both of the above targets the extension `.bin` can be replaced with `.vhex`
+for generating images in Verilog-H textual hex format.
 
-The dependency build should pick up changes to the source and rebuild the
-binaries by re-runnning the same make target. But, in case you need to clean
-currently built binaries and Zebu memory images:
+
+The `zebu-hpps` target builds the target software binaries as a prerequisite,
+or they can be built explicitly:
+
+    make PROF=zebu hpps
+
+The dependency build for `hpps` target should pick up changes to the source and
+rebuild the software binaries when you re-make the target. But, in case you
+need to clean currently built binaries and Zebu memory images:
 
     make PROF=zebu hpps-clean zebu-hpps-clean
 
+These binaries can also be built individually via the following targets and can
+be cleaned via the same targets suffixed with `-clean`.
+
+    make PROF=zebu hpps-atf hpps-uboot hpps-linux
+
+The aggregate target for the target software binaries for HPPS is `hpps`,
+i.e. the above command is equivalent to (`-clean` suffix also supported):
+
+    make PROF=zebu hpps
+
+The list of generated binaries and the memory address where Qemu will preload
+them to, is in `ssw/hpsc-utils/conf/dram-boot/qemu/preload.prof.mem.map`.
+
+The corresponding binaries in ELF format (for disassembly and debugging):
+    * ATF: hpps/arm-trusted-firmware/build/debug/hpsc/bl31/bl31.elf
+    * U-boot: hpps/u-boot/u-boot
+    * Linux kernel: hpps/linux/vmlinux
+
+Run Zebu emulator
+-----------------
+
+Run Qemu emulator
+-----------------
 
 Launch Qemu with the built software:
 
@@ -83,38 +110,12 @@ This window will show output from the Synopsys UART.  You only need to do this
 once, and leave it open, when you re-run the run-qemu.sh script, it will find
 the open session and re-attach to it.
 
-Rebuild sofware binaries and memory images
-------------------------------------------
-
-The `zebu-hpps` target builds the target software binaries as a prerequisite.
-These binaries can also be built individually via the following targets and can
-be cleaned via the same targets suffixed with `-clean`.
-
-    make PROF=zebu hpps-atf hpps-uboot hpps-linux
-
-The aggregate target for the target software binaries for HPPS is `hpps`,
-i.e. the above command is equivalent to (`-clean` suffix also supported):
-
-    make PROF=zebu hpps
-
-The binaries will be generated at:
-
-    * ATF: hpps/arm-trusted-firmware/build/debug/hpsc/bl31.bin
-    * U-boot: hpps/u-boot/u-boot.bin
-    * Linux kernel: bld/prof/zebu/hpps/uImage
-    * Linux DT: linux-hpsc/arch/arm64/boot/dts/hpsc/hpsc.dtb
+Debugging
+---------
 
 To disassemble a built binary, invoke objdump on the binary in ELF format:
 
     $ aarch64-poky-linux-objdump -D path/to/elf_binary > binary.S
-
-where the respective ELF format binaries are:
-    * ATF: hpps/arm-trusted-firmware/build/debug/hpsc/bl31/bl31.elf
-    * U-boot: hpps/u-boot/u-boot
-    * Linux kernel: hpps/linux/vmlinux
-
-Debugging
----------
 
 From a third shell window launch GDB debugger with the code of the
 target binary (in ELF format, which may be a different file from the binary
