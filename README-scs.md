@@ -90,9 +90,9 @@ them to, is in `ssw/hpsc-utils/conf/dram-boot/qemu/preload.prof.mem.map`.
 
 The corresponding binaries in ELF format (for disassembly and debugging):
 
-* ATF: hpps/arm-trusted-firmware/build/debug/hpsc/bl31/bl31.elf
-* U-boot: hpps/u-boot/u-boot
-* Linux kernel: hpps/linux/vmlinux
+* ATF: `ssw/hpps/arm-trusted-firmware/build/debug/hpsc/bl31/bl31.elf`
+* U-boot: `ssw/hpps/u-boot/u-boot`
+* Linux kernel: `ssw/hpps/linux/vmlinux`
 
 Run Qemu emulator
 -----------------
@@ -150,9 +150,20 @@ Link to the memory image from the HPSC SW stack build (see previous section):
     $ ln -s /projects/boeing/$(whoami)/hpsc/bld/prof/zebu/zebu/mem.bin mem.raw
     $ cd ..
 
+As an alternative, for striped images (see build section above):
+
+    $ cd zRci_testcases
+    $ ln -s /projects/boeing/$(whoami)/hpsc/bld/prof/zebu/zebu/prof.hpps.ddr.0.bin mem0.raw
+    $ ln -s /projects/boeing/$(whoami)/hpsc/bld/prof/zebu/zebu/prof.hpps.ddr.1.bin mem1.raw
+    $ unlink load_ddr.mem
+    $ ln -s load_mem_files/load_ddr_raw_striped.mem load_ddr.mem
+    $ cd ..
+
 ### Initialize environment (do this for every new shell)
 
+
     $ source /projects/boeing/zebu_env_files/zebu_setup.sh
+    $ setenv PATH /projects/boeing/isi/zebu/bin:$PATH
 
 ### Launch Zebu
 
