@@ -1,4 +1,4 @@
-# HOW TO for running the Qemu emulator on the SCS server:
+# HOW TO run ISI HPSC SW stack in Qemu and in Zebu on the SCS server
 
 Get the source and build the SDK
 --------------------------------
@@ -67,11 +67,6 @@ These binaries can also be built individually via the following targets and can
 be cleaned via the same targets suffixed with `-clean`.
 
     make PROF=zebu hpps-atf hpps-uboot hpps-linux
-
-The aggregate target for the target software binaries for HPPS is `hpps`,
-i.e. the above command is equivalent to (`-clean` suffix also supported):
-
-    make PROF=zebu hpps
 
 The list of generated binaries and the memory address where Qemu will preload
 them to, is in `ssw/hpsc-utils/conf/dram-boot/qemu/preload.prof.mem.map`.
