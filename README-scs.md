@@ -141,14 +141,14 @@ You should see when gdb attaches to the emulator:
 
 * for ATF
 
-	Remote debugging using localhost:1234
-	bl31_entrypoint () at bl31/aarch64/bl31_entrypoint.S:58
+        Remote debugging using localhost:1234
+        bl31_entrypoint () at bl31/aarch64/bl31_entrypoint.S:58
 
 * for U-boot
 
-	Remote debugging using localhost:1234
-	_start () at arch/arm/cpu/armv8/start.S:31
-	31              b       reset
+        Remote debugging using localhost:1234
+        _start () at arch/arm/cpu/armv8/start.S:31
+        31              b       reset
 
 * for Linux
 
