@@ -3,7 +3,12 @@
 Get the source and build the SDK
 --------------------------------
 
-Get the source by cloning `zebu` branch to a directory of your choice:
+Create a working directory for yourself on the network share:
+
+    $ mkdir /projects/boeing/$(whoami)
+    $ cd /projects/boeing/$(whoami)
+
+Get the source by cloning `zebu` branch:
 
     $ git clone --recursive -b zebu /projects/boeing/isi/hpsc
 
@@ -14,10 +19,18 @@ Enter the Bash shell and enter the repository directory and setup parallel make
     $ cd hpsc
     $ alias make="make -j20"
 
-Build the sysroot and build the SDK against that sysroot (when `FETCH_CACHE` is
+Build the sysroot against which the SDK will be built (when `FETCH_CACHE` is
 given, source taballs are fetched from there instead of from the Internet):
 
     $ make FETCH_CACHE=/projects/boeing/isi/hpsc sdk-deps-sysroot
+
+Load the sysroot into the environment (needed only for building the SDK):
+
+    $ source sdk/hpsc-sdk-tools/sysroot/bld/env.sh
+
+Build the SDK (includes Qemu emulator and supooring host-side tools):
+
+    $ make sdk
 
 Load the SDK into the environment (do this every time you start a new shell):
 
@@ -36,7 +49,11 @@ Build the software stack for the target:
 
     $ make PROF=zebu
 
-To also build memory images for loading into Zebu:
+To clean the build:
+
+    $ make PROF=zebu clean
+
+To build memory image for loading into Zebu (to clean, append `-clean` suffix):
 
     $ make PROF=zebu zebu-hpps
 
@@ -72,15 +89,16 @@ The list of generated binaries and the memory address where Qemu will preload
 them to, is in `ssw/hpsc-utils/conf/dram-boot/qemu/preload.prof.mem.map`.
 
 The corresponding binaries in ELF format (for disassembly and debugging):
-    * ATF: hpps/arm-trusted-firmware/build/debug/hpsc/bl31/bl31.elf
-    * U-boot: hpps/u-boot/u-boot
-    * Linux kernel: hpps/linux/vmlinux
 
-Run Zebu emulator
------------------
+* ATF: hpps/arm-trusted-firmware/build/debug/hpsc/bl31/bl31.elf
+* U-boot: hpps/u-boot/u-boot
+* Linux kernel: hpps/linux/vmlinux
 
 Run Qemu emulator
 -----------------
+
+Since Zebu emulator takes a long time to start, it is useful to first run the
+exact same software binaries in Qemu emulator.
 
 Launch Qemu with the built software:
 
@@ -97,13 +115,49 @@ Also look for the message (this port number will be used later):
 
     GDB_PORT = 3037 (your number will differ)
 
-From another shell window, connect to the serial console:
+From another terminal window, start the `bash` shell and load the SDK:
    
+    $ bash
+    $ cd /projects/boeing/$(whoami)/hpsc
+    $ source sdk/bld/env.sh
+
+Connect to the serial console for HPPS UART port:
+
     $ screen -r hpsc-0-hpps
 
 This window will show output from the Synopsys UART.  You only need to do this
 once, and leave it open, when you re-run the run-qemu.sh script, it will find
 the open session and re-attach to it.
+
+Run Zebu emulator
+-----------------
+
+On the `scsrt` server in the default shell (not `bash`), setup the Zebu
+environment.
+
+### Setup Zebu testbench (do this once)
+
+Get the Zebu testbench to directory of your choice and build it (do this once):
+
+    $ rsync -aq /projects/boeing/isi/zebu .
+    $ cd zebu/zebu_zRci_hpsc
+    $ make
+    $ cd ..
+
+Link to the memory image from the HPSC SW stack build (see previous section):
+
+    $ cd zRci_testcases
+    $ ln -s /projects/boeing/$(whoami)/hpsc/bld/prof/zebu/zebu/mem.bin mem.raw
+    $ cd ..
+
+### Initialize environment (do this for every new shell)
+
+    $ source /projects/boeing/zebu_env_files/zebu_setup.sh
+
+### Launch Zebu
+
+    $ cd zebu_zRci_hpsc
+    $ make zrci
 
 Debugging
 ---------
