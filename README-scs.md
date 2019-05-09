@@ -1,4 +1,4 @@
-# HOW TO run ISI HPSC SW stack in Qemu and in Zebu on the SCS server
+# HOW TO: HPSC SW stack in Qemu and Zebu on SCS server
 
 Get the source and build the SDK
 --------------------------------
