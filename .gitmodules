@@ -31,8 +31,8 @@
 	url = /projects/boeing/isi/hpsc/ssw/hpps/linux
 	branch = snap
 [submodule "hpps/userspace/busybox"]
-	path = ssw/hpps/userspace/busybox
-	url = /projects/boeing/isi/hpsc/ssw/hpps/userspace/busybox
+	path = ssw/hpps/busybox
+	url = /projects/boeing/isi/hpsc/ssw/hpps/busybox
 [submodule "ssw/rtps/a53/arm-trusted-firmware"]
 	path = ssw/rtps/a53/arm-trusted-firmware
 	url = /projects/boeing/isi/hpsc/ssw/rtps/a53/arm-trusted-firmware
