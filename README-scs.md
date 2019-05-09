@@ -4,10 +4,22 @@ Get the source by cloning `zebu` branch to a directory of your choice:
 
     $ git clone --recursive -b zebu /projects/boeing/isi/hpsc
 
-Build the sysroot and build the SDK against that sysroot:
+Enter the Bash shell and enter the repository directory and setup parallel make
+(SCS server has many cores, adjust accordingly for your server):
 
     $ bash
     $ cd hpsc
+    $ alias make="make -j20"
+
+Before building the SDK, on an offline system (SCS server is offline), fetch
+the source tarballs:
+
+    $ mkdir -p sdk/bld/ sdk/hpsc-sdk-tools/sysroot/bld/
+    $ rsync -aq /projects/boeing/isi/hpsc/sdk/bld/fetch sdk/bld/
+    $ rsync -aq /projects/boeing/isi/hpsc/sdk/hpsc-sdk-tools/sysroot/bld/fetch sdk/hpsc-sdk-tools/sysroot/bld/
+
+Build the sysroot and build the SDK against that sysroot:
+
     $ make sdk-deps-sysroot
 
 Prepare environment (do this every time you start a new shell):
@@ -15,7 +27,10 @@ Prepare environment (do this every time you start a new shell):
     $ bash
     $ cd hpsc
     $ source sdk/bld/env.sh
-    $ alias make=make -j20
+
+Change to `ssw/` directory (or, alternatively, prefix all targets with `ssw=`):
+
+    $ cd ssw
 
 Build the software stack for the target:
 
