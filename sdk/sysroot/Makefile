@@ -1,1 +1,0 @@
-../hpsc-sdk-tools/make/Makefile.sysroot
