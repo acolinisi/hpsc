@@ -3,7 +3,8 @@
 Get the source
 --------------
 
-On the `scs` server, create a working directory for you on the network share:
+On the `scsrt` server (not `scs` server), create a working directory for you on
+the network share:
 
     $ mkdir /projects/boeing/`whoami`
     $ cd /projects/boeing/`whoami`
@@ -15,12 +16,11 @@ Get the source by cloning `zebu` branch:
 Build the HPSC SDK
 ------------------
 
-Enter the Bash shell and enter the repository directory and setup parallel make
-(SCS server has many cores, adjust accordingly for your server):
+Enter the Bash shell and enter the repository directory and setup parallel make:
 
     $ bash
     $ cd hpsc
-    $ alias make="make -j20"
+    $ alias make="make -j16"
 
 Build the sysroot against which the SDK will be built (when `FETCH_CACHE` is
 given, source taballs are fetched from there instead of from the Internet):
@@ -31,7 +31,7 @@ Load the sysroot into the environment (needed only for building the SDK):
 
     $ source sdk/hpsc-sdk-tools/sysroot/bld/env.sh
 
-Build the SDK (includes Qemu emulator and supooring host-side tools):
+Build the SDK (includes Qemu emulator and supporting host-side tools):
 
     $ make sdk
 
@@ -125,8 +125,7 @@ once, and leave it open; when you re-run, it will re-attach to the open session.
 Run Zebu emulator
 -----------------
 
-On the `scsrt` server (not the `scs` server) in the default shell (not `bash`),
-setup the Zebu environment.
+In the default shell (not `bash`), setup the Zebu environment.
 
 ### Setup Zebu testbench (do this once)
 
