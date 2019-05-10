@@ -1,16 +1,19 @@
 # HOW TO: HPSC SW stack in Qemu and Zebu on SCS server
 
-Get the source and build the SDK
---------------------------------
+Get the source
+--------------
 
-Create a working directory for yourself on the network share:
+On the `scs` server, create a working directory for you on the network share:
 
-    $ mkdir /projects/boeing/$(whoami)
-    $ cd /projects/boeing/$(whoami)
+    $ mkdir /projects/boeing/`whoami`
+    $ cd /projects/boeing/`whoami`
 
 Get the source by cloning `zebu` branch:
 
     $ git clone --recursive -b zebu /projects/boeing/isi/hpsc
+
+Build the HPSC SDK
+------------------
 
 Enter the Bash shell and enter the repository directory and setup parallel make
 (SCS server has many cores, adjust accordingly for your server):
@@ -132,8 +135,8 @@ the open session and re-attach to it.
 Run Zebu emulator
 -----------------
 
-On the `scsrt` server in the default shell (not `bash`), setup the Zebu
-environment.
+On the `scsrt` server (not the `scs` server) in the default shell (not `bash`),
+setup the Zebu environment.
 
 ### Setup Zebu testbench (do this once)
 
@@ -147,20 +150,19 @@ Get the Zebu testbench to directory of your choice and build it (do this once):
 Link to the memory image from the HPSC SW stack build (see previous section):
 
     $ cd zRci_testcases
-    $ ln -s /projects/boeing/$(whoami)/hpsc/bld/prof/zebu/zebu/mem.bin mem.raw
+    $ ln -s /projects/boeing/`whoami`/hpsc/ssw/bld/prof/zebu/zebu/prof.hpps.dram.mem.bin mem.raw
     $ cd ..
 
 As an alternative, for striped images (see build section above):
 
     $ cd zRci_testcases
-    $ ln -s /projects/boeing/$(whoami)/hpsc/bld/prof/zebu/zebu/prof.hpps.ddr.0.bin mem0.raw
-    $ ln -s /projects/boeing/$(whoami)/hpsc/bld/prof/zebu/zebu/prof.hpps.ddr.1.bin mem1.raw
+    $ ln -s /projects/boeing/`whoami`/hpsc/ssw/bld/prof/zebu/zebu/prof.hpps.ddr.0.bin mem0.raw
+    $ ln -s /projects/boeing/`whoami`/hpsc/ssw/bld/prof/zebu/zebu/prof.hpps.ddr.1.bin mem1.raw
     $ unlink load_ddr.mem
     $ ln -s load_mem_files/load_ddr_raw_striped.mem load_ddr.mem
     $ cd ..
 
 ### Initialize environment (do this for every new shell)
-
 
     $ source /projects/boeing/zebu_env_files/zebu_setup.sh
     $ setenv PATH /projects/boeing/isi/zebu/bin:$PATH
@@ -170,8 +172,12 @@ As an alternative, for striped images (see build section above):
     $ cd zebu_zRci_hpsc
     $ make zrci
 
-Debugging
----------
+In a different shell, connect to the serial console on HPPS UART port:
+
+    $ screen -r zebu-uart-hpps
+
+Debugging target code in Qemu
+-----------------------------
 
 To disassemble a built binary, invoke objdump on the binary in ELF format:
 
