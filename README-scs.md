@@ -23,7 +23,8 @@ Enter the Bash shell and enter the repository directory and setup parallel make:
     $ alias make="make -j16"
 
 Build the sysroot against which the SDK will be built (when `FETCH_CACHE` is
-given, source taballs are fetched from there instead of from the Internet):
+given, source taballs are fetched from there instead of from the Internet),
+takes about 5 minutes on 20 cores:
 
     $ make FETCH_CACHE=/projects/boeing/isi/hpsc sdk-deps-sysroot
 
