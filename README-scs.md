@@ -146,8 +146,10 @@ Link to the memory image from the HPSC SW stack build (see previous section):
 
 ### Initialize environment (do this for every new shell)
 
+Assuming your hpsc repository is at `/projects/boeing/`whoami`/hpsc`:
+
     $ source /projects/boeing/zebu_env_files/zebu_setup.sh
-    $ setenv PATH /projects/boeing/isi/zebu/bin:$PATH
+    $ setenv PATH /projects/boeing/`whoami`/hpsc/sdk/zebu/bin:$PATH
 
 ### Launch Zebu
 
