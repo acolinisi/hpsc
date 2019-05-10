@@ -153,12 +153,27 @@ Assuming your hpsc repository is at `/projects/boeing/`whoami`/hpsc`:
 
 ### Launch Zebu
 
+Start Zebu with (each running instance consumes a license):
+
     $ cd zebu_zRci_hpsc
     $ make zrci
 
 In a different shell, connect to the serial console on HPPS UART port:
 
     $ screen -r zebu-uart-hpps
+
+At the `zRci` prompt, when paused, to continue running for some cycles:
+
+    % run 10000000
+
+To exit:
+
+    % quit
+
+A stackdump on exit is commonly observed. Also, if the process fails to exit,
+then send it to background with `Ctrl-Z` and kill the job with `SIGKILL`:
+
+    $ kill -9 %1
 
 Debugging target code in Qemu
 -----------------------------
