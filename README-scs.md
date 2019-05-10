@@ -120,8 +120,7 @@ Connect to the serial console for HPPS UART port:
     $ screen -r hpsc-0-hpps
 
 This window will show output from the Synopsys UART.  You only need to do this
-once, and leave it open, when you re-run the run-qemu.sh script, it will find
-the open session and re-attach to it.
+once, and leave it open; when you re-run, it will re-attach to the open session.
 
 Run Zebu emulator
 -----------------
@@ -203,7 +202,7 @@ Or, to debug Linux kernel binary:
     $ aarch64-poky-linux-gdb ssw/hpps/linux/vmlinux
 
 Then, attach the GDB client to the Qemu emulator, replacing 3037 in the example
-below with GDB_PORT from run-qemu.sh output (see instructions above):
+below with GDB_PORT from `run` target output (see instructions above):
 
     (gdb) target remote localhost:3037
 
