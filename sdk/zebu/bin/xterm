@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Script that redirects Zebu UART Xtor to a TTY in a screen session
+#
+# By default the UART Xtor creates an xterm window and redirects the
+# UART to the PTY created by xterm, which requires an X server.
+#
+# This script can be used instead of xterm to redirect the UART
+# to a PTY inside a screen session. Since UART Xtor cannot be
+# modified or parametrized, to make the UART Xtor invoke
+# this script, it needs to be in PATH with the name 'xterm',
+# in the shell that invokes the zRci process:
+#
+#     setenv PATH $PWD/sdk/zebu/bin:$PATH
+#     make zrci ...
+#
+# Then, from another shell, attach to the screen session, which
+# only needs to be done once, this script will re-use an attached
+# screen session on subsequent runs:
+#
+#     screen -r zebu-uart-hpps
+
+# Example invocation by UART Xtor:
+# xterm -tn 'UART_XTERMINAL' -l -e 'tty > /tmp/ZuartXtor.0.2506; /projects/boeing/Zebu_IP_Root/ZebuIpRoot_ZS2018.09/bin/zEcho "UART_XTERMINAL" 2506' &
+
+cmd="$5"
+echo Command: $cmd
+
+SESSION=zebu-uart-hpps
+screen -q -list "$SESSION"
+if [ $? -lt 10 ]
+then
+	echo "Creating screen session: $SESSION"
+	screen -dm -S "$SESSION"
+fi
+
+echo "Connecting to UART PTY in screen session: $SESSION"
+echo "Attach from another shell window with: screen -r $SESSION"
+
+screen -S $SESSION -X screen bash -c "$cmd"
