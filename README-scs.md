@@ -60,17 +60,8 @@ To build memory image for loading into Zebu (to clean, append `-clean` suffix):
 
     $ make PROF=zebu zebu-hpps
 
-A single unstriped image in binary format will be created at (note: this one
-must be loaded into both DDRs): `bld/prof/zebu/zebu/mem.bin`.
-
-As an alternative, to build *striped* set of memory images for DDR0 and DDR1 in
-binary format (note: both images must be loaded into their respective DDRs):
-
-    make PROF=zebu bld/prof/zebu/zebu/prof.hpps.ddr.x.bin
-
-In both of the above targets the extension `.bin` can be replaced with `.vhex`
-for generating images in Verilog-H textual hex format.
-
+A single unstriped image in binary format (that must be loaded into each of the
+stripped DDR banks by Zebu) will be created at: `bld/prof/zebu/zebu/mem.bin`.
 
 The `zebu-hpps` target builds the target software binaries as a prerequisite,
 or they can be built explicitly:
@@ -151,15 +142,6 @@ Link to the memory image from the HPSC SW stack build (see previous section):
 
     $ cd zRci_testcases
     $ ln -s /projects/boeing/`whoami`/hpsc/ssw/bld/prof/zebu/zebu/prof.hpps.dram.mem.bin mem.raw
-    $ cd ..
-
-As an alternative, for striped images (see build section above):
-
-    $ cd zRci_testcases
-    $ ln -s /projects/boeing/`whoami`/hpsc/ssw/bld/prof/zebu/zebu/prof.hpps.ddr.0.bin mem0.raw
-    $ ln -s /projects/boeing/`whoami`/hpsc/ssw/bld/prof/zebu/zebu/prof.hpps.ddr.1.bin mem1.raw
-    $ unlink load_ddr.mem
-    $ ln -s load_mem_files/load_ddr_raw_striped.mem load_ddr.mem
     $ cd ..
 
 ### Initialize environment (do this for every new shell)
