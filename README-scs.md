@@ -32,9 +32,9 @@ Load the sysroot into the environment (needed only for building the SDK):
 
     $ source sdk/hpsc-sdk-tools/sysroot/bld/env.sh
 
-Build the SDK (includes Qemu emulator and supporting host-side tools):
+Build the SDK including Zebu harness (includes Qemu emulator and host tools):
 
-    $ make sdk
+    $ make sdk sdk-zebu
 
 Load the SDK into the environment (do this every time you start a new shell):
 
