@@ -51,3 +51,6 @@
 [submodule "ssw/hpps/yocto/meta-hpsc"]
 	path = ssw/hpps/yocto/meta-hpsc
 	url = /projects/boeing/isi/hpsc/ssw/hpps/yocto/meta-hpsc
+[submodule "sdk/zebu"]
+	path = sdk/zebu
+	url = /projects/boeing/isi/zebu
