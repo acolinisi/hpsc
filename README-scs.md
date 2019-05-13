@@ -93,11 +93,11 @@ Run Qemu emulator
 -----------------
 
 Since Zebu emulator takes a long time to start, it is useful to first run the
-exact same software binaries in Qemu emulator.
+exact same software binaries in Qemu emulator, after every code edit.
 
 Launch Qemu with the built software:
 
-    $ make PROF=zebu run
+    $ make PROF=zebu qrun
 
 Look for the message:
 
@@ -123,39 +123,15 @@ Connect to the serial console for HPPS UART port:
 This window will show output from the Synopsys UART.  You only need to do this
 once, and leave it open; when you re-run, it will re-attach to the open session.
 
+You can also invoke Qemu manually via `sdk/hpsc-sdk-tools/launch-qemu` script,
+for the command see the `qrun` target in `ssw/Makefile`.
+
 Run Zebu emulator
 -----------------
 
-In the default shell (not `bash`), setup the Zebu environment.
+Launch Qemu with the built software:
 
-### Setup Zebu testbench (do this once)
-
-Get the Zebu testbench to directory of your choice and build it (do this once):
-
-    $ rsync -aq /projects/boeing/isi/zebu .
-    $ cd zebu/zebu_zRci_hpsc
-    $ make
-    $ cd ..
-
-Link to the memory image from the HPSC SW stack build (see previous section):
-
-    $ cd zRci_testcases
-    $ ln -s /projects/boeing/`whoami`/hpsc/ssw/bld/prof/zebu/zebu/prof.hpps.dram.mem.bin mem.raw
-    $ cd ..
-
-### Initialize environment (do this for every new shell)
-
-Assuming your `hpsc` repository is at `/projects/boeing/USERNAME/hpsc`:
-
-    $ source /projects/boeing/zebu_env_files/zebu_setup.sh
-    $ setenv PATH /projects/boeing/`whoami`/hpsc/sdk/zebu/bin:$PATH
-
-### Launch Zebu
-
-Start Zebu with (each running instance consumes a license):
-
-    $ cd zebu_zRci_hpsc
-    $ make zrci
+    $ make PROF=zebu zrun
 
 In a different shell, connect to the serial console on HPPS UART port:
 
@@ -173,6 +149,10 @@ A stackdump on exit is commonly observed. Also, if the process fails to exit,
 then send it to background with `Ctrl-Z` and kill the job with `SIGKILL`:
 
     $ kill -9 %1
+
+You can also invoke Zebu manually via `sdk/zebu/bin/launch-zebu` script,
+for the command see the `zrun` target in `ssw/Makefile`, note that
+the script must be invoked in a specific shell.
 
 Debugging target code in Qemu
 -----------------------------
@@ -281,3 +261,51 @@ Then, re-run Qemu using the make target given in the beginning of this guide.
 
 Then, re-attach gdb from the gdb session that is still running, using
 the same `target remote` command as before.
+
+Transfering commits to and from server
+--------------------------------------
+
+The `scsrt` server is "offline" (i.e. cannot reach Internet hosts) and cannot
+directly push to repositories over the Internet. To push to repos over
+the Internet (e.g. Github), commits made in the repository on the server need
+to be passed through a clone on an "online" host (e.g. your laptop).
+
+First, for convenience, On the online host, add a host alias for the IP of the
+`scsrt` server in `/etc/hosts`:
+
+    1.2.3.4 scsrt
+
+And, configure SSH such that `ssh scsrt` works, in `~/.ssh/config`:
+
+    Host scsrt
+        User your_scs_username
+
+And, setup key-based SSH login:
+
+    $ ssh-copy-id scsrt
+
+Clone the repository from the `scsrt` server to your online host:
+
+    $ git clone --recursive scsrt:/projects/boeing/your_scs_username/hpsc
+
+For each submodule that you care about, add the Internet remote clone,
+for example, for HPPS Linux:
+
+    $ cd ssw/hpps/linux
+    $ git clone add gh git@github.com:ISI-apex/linux.git
+
+Now, you can fetch commits from the server and push them to the above clone:
+
+    $ cd ssw/hpps/linux
+    $ git fetch origin
+    $ git push gh origin/hpsc:HEAD
+
+Or, push commits to the server:
+
+    $ cd ssw/hpps/linux
+    $ git push origin hpsc:hpsc
+
+Note that to push, the destination repo on the server must not be checked out
+at the branch to which you are pushing. If it is, then either push to a
+different branch then check it out, or checkout into a different branch on the
+server (`git checkout -b local-hpsc`) and then push.
