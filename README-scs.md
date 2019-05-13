@@ -150,9 +150,10 @@ then send it to background with `Ctrl-Z` and kill the job with `SIGKILL`:
 
     $ kill -9 %1
 
-You can also invoke Zebu manually via `sdk/zebu/bin/launch-zebu` script,
-for the command see the `zrun` target in `ssw/Makefile`, note that
-the script must be invoked in a specific shell.
+You can also invoke Zebu manually via `sdk/zebu/bin/launch-zebu` script by
+passing it the Zebu memory image built in the build section of this guide.  For
+the command see the `zrun` target in `ssw/Makefile`, note that the script must
+be invoked in a specific shell.
 
 Debugging target code in Qemu
 -----------------------------
