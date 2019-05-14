@@ -22,11 +22,18 @@ Enter the Bash shell and enter the repository directory and setup parallel make:
     $ cd hpsc
     $ alias make="make -j16"
 
+Since the `scsrt` server is offline, set a variable to point to a directory
+with source tarballs (this dir already exists on the `scsrt` server, but in
+case you want to create it: on an online machine, run `make sdk-fetch` and the
+directory will be populated at `sdk/bld/fetch`):
+
+    $ export FETCH_CACHE=/projects/boeing/isi/hpsc/sdk/bld/fetch
+
 Build the sysroot against which the SDK will be built (when `FETCH_CACHE` is
 given, source taballs are fetched from there instead of from the Internet),
 takes about 5 minutes on 20 cores:
 
-    $ make FETCH_CACHE=/projects/boeing/isi/hpsc/sdk/bld/fetch sdk-deps-sysroot
+    $ make sdk-deps-sysroot
 
 Load the sysroot into the environment (needed only for building the SDK):
 
