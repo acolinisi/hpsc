@@ -322,6 +322,17 @@ whole repository or clone individual components.
             $ cd ssw/hpps/linux
             $ git remote add gh git@github.com:ISI-apex/linux.git
 
+  To fetch commits from the server and push them to the (Internet) remote:
+
+            $ cd ssw/hpps/linux
+            $ git fetch origin
+            $ git push gh origin/somebranch:somebranch
+
+  Or, to push commits to the server:
+
+            $ cd ssw/hpps/linux
+            $ git push origin hpsc:hpsc
+
 * Option B: clone individual components
 
   Clone each component your are interested in, e.g. for HPPS Linux:
@@ -329,6 +340,9 @@ whole repository or clone individual components.
             $ git clone scsrt:/projects/boeing/your_scs_username/hpsc/ssw/hpps/linux
             $ cd linux
             $ git remote add gh git@github.com:ISI-apex/linux.git
+
+   Fetching commits from server and pushing them to other remotes is same as
+   for Option A.
 
 * Option C: add a remote to existing clone
 
@@ -338,18 +352,16 @@ whole repository or clone individual components.
             $ cd your/existing/linux
             $ git remote add scsrt scsrt:/projects/boeing/your_scs_username/hpsc/ssw/hpps/linux
 
-For either option, use the clone as follows.
+  To fetch commits from the server and push them to the above remote:
 
-To fetch commits from the server and push them to the above remote:
+            $ cd ssw/hpps/linux
+            $ git fetch scsrt
+            $ git push origin scsrt/somebranch:somebranch
 
-    $ cd ssw/hpps/linux
-    $ git fetch origin
-    $ git push gh origin/hpsc:HEAD
+  Or, to push commits to the server:
 
-Or, to push commits to the server:
-
-    $ cd ssw/hpps/linux
-    $ git push origin hpsc:hpsc
+            $ cd ssw/hpps/linux
+            $ git push scsrt somebranch:somebranch
 
 Note that to push, the destination repo on the server must not be checked out
 at the branch to which you are pushing. If it is, then either push to a
