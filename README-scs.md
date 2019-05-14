@@ -316,27 +316,37 @@ extra step because it uses submodules itself):
             $ sed -i 's#url = /#url = scsrt:/#' sdk/qemu/.gitmodules
             $ git submodule update --recursive
 
+For each component you are interested in, add the Internet remote clone, for
+example, for HPPS Linux:
+
+    $ cd ssw/hpps/linux
+    $ git remote add gh git@github.com:ISI-apex/linux.git
+
 * Option B: clone individual components
 
 Clone each component your are interested in, e.g. for HPPS Linux:
 
             $ git clone scsrt:/projects/boeing/your_scs_username/hpsc/ssw/hpps/linux
+            $ cd linux
+            $ git remote add gh git@github.com:ISI-apex/linux.git
 
-For either option, use the clone as follows:
+* Option C: add a remote to existing clone
 
-For each component you are interested in, add the Internet remote clone, for
-example, for HPPS Linux:
+If you already have a clone of an existing component, then you can add
+the server clone as remote, e.g. for HPPS Linux:
 
-    $ cd ssw/hpps/linux
-    $ git clone add gh git@github.com:ISI-apex/linux.git
+            $ cd your/existing/linux
+            $ git remote add scsrt scsrt:/projects/boeing/your_scs_username/hpsc/ssw/hpps/linux
 
-Now, you can fetch commits from the server and push them to the above remote:
+For either option, use the clone as follows.
+
+To fetch commits from the server and push them to the above remote:
 
     $ cd ssw/hpps/linux
     $ git fetch origin
     $ git push gh origin/hpsc:HEAD
 
-Or, push commits to the server:
+Or, to push commits to the server:
 
     $ cd ssw/hpps/linux
     $ git push origin hpsc:hpsc
