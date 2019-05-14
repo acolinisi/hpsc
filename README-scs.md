@@ -297,9 +297,17 @@ And, setup key-based SSH login:
 
     $ ssh-copy-id scsrt
 
-Clone the repository from the `scsrt` server to your online host:
+Clone the repository from the `scsrt` server to your online host and re-point
+the submodule paths to refer to the server via SSH (`sdk/qemu` requires an
+extra step because it uses submodules itself):
 
-    $ git clone --recursive scsrt:/projects/boeing/your_scs_username/hpsc
+    $ git clone scsrt:/projects/boeing/your_scs_username/hpsc
+    $ cd hpsc
+    $ sed -i 's#url = /#url = scsrt:/#' .gitmodules
+    $ git submodule init
+    $ git submodule update sdk/qemu
+    $ sed -i 's#url = /#url = scsrt:/#' sdk/qemu/.gitmodules
+    $ git submodule update --recursive
 
 For each submodule that you care about, add the Internet remote clone,
 for example, for HPPS Linux:
