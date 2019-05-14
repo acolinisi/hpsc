@@ -319,8 +319,8 @@ whole repository or clone individual components.
   For each component you are interested in, add the Internet remote clone, for
   example, for HPPS Linux:
 
-    $ cd ssw/hpps/linux
-    $ git remote add gh git@github.com:ISI-apex/linux.git
+            $ cd ssw/hpps/linux
+            $ git remote add gh git@github.com:ISI-apex/linux.git
 
 * Option B: clone individual components
 
