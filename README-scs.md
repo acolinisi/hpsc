@@ -297,25 +297,40 @@ And, setup key-based SSH login:
 
     $ ssh-copy-id scsrt
 
+Next, create a clone on your online host and use that clone to fetch from
+or push to the server, and to fetch from and push to the Internet repository.
+There are two options for creating this intemediate clone: either clone the
+whole repository or clone individual components.
+
+* Option A: clone the whole repository
+
 Clone the repository from the `scsrt` server to your online host and re-point
 the submodule paths to refer to the server via SSH (`sdk/qemu` requires an
 extra step because it uses submodules itself):
 
-    $ git clone scsrt:/projects/boeing/your_scs_username/hpsc
-    $ cd hpsc
-    $ sed -i 's#url = /#url = scsrt:/#' .gitmodules
-    $ git submodule init
-    $ git submodule update sdk/qemu
-    $ sed -i 's#url = /#url = scsrt:/#' sdk/qemu/.gitmodules
-    $ git submodule update --recursive
+            $ git clone scsrt:/projects/boeing/your_scs_username/hpsc
+            $ cd hpsc
+            $ sed -i 's#url = /#url = scsrt:/#' .gitmodules
+            $ git submodule init
+            $ git submodule update sdk/qemu
+            $ sed -i 's#url = /#url = scsrt:/#' sdk/qemu/.gitmodules
+            $ git submodule update --recursive
 
-For each submodule that you care about, add the Internet remote clone,
-for example, for HPPS Linux:
+* Option B: clone individual components
+
+Clone each component your are interested in, e.g. for HPPS Linux:
+
+            $ git clone scsrt:/projects/boeing/your_scs_username/hpsc/ssw/hpps/linux
+
+For either option, use the clone as follows:
+
+For each component you are interested in, add the Internet remote clone, for
+example, for HPPS Linux:
 
     $ cd ssw/hpps/linux
     $ git clone add gh git@github.com:ISI-apex/linux.git
 
-Now, you can fetch commits from the server and push them to the above clone:
+Now, you can fetch commits from the server and push them to the above remote:
 
     $ cd ssw/hpps/linux
     $ git fetch origin
