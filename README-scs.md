@@ -130,6 +130,11 @@ Connect to the serial console for HPPS UART port:
 This window will show output from the Synopsys UART.  You only need to do this
 once, and leave it open; when you re-run, it will re-attach to the open session.
 
+To quit Qemu, issue the command at the monitor prompt (press Enter if no prompt
+visible):
+
+    (qemu) quit
+
 You can also invoke Qemu manually via `sdk/hpsc-sdk-tools/launch-qemu` script,
 for the command see the `qrun` target in `ssw/Makefile`.
 
