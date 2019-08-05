@@ -32,7 +32,7 @@
 	branch = snap
 [submodule "hpps/userspace/busybox"]
 	path = ssw/hpps/busybox
-	url = git@github.com:acolinisi/busybox.git
+	url = git@github.com:ISI-apex/busybox.git
 [submodule "ssw/rtps/a53/arm-trusted-firmware"]
 	path = ssw/rtps/a53/arm-trusted-firmware
 	url = git@github.com:ISI-apex/arm-trusted-firmware.git
