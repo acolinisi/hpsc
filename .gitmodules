@@ -41,7 +41,7 @@
 	url = git@github.com:ISI-apex/u-boot.git
 [submodule "sdk/hpsc-sdk-tools"]
 	path = sdk/hpsc-sdk-tools
-	url = git@github.com:acolinisi/hpsc-sdk-tools.git
+	url = git@github.com:ISI-apex/hpsc-sdk-tools.git
 [submodule "ssw/hpps/yocto/meta-openembedded"]
 	path = ssw/hpps/yocto/meta-openembedded
 	url = https://github.com/openembedded/meta-openembedded.git
