@@ -13,14 +13,25 @@ Get the source by cloning `zebu` branch:
 
     $ git clone --recursive -b zebu /projects/boeing/isi/hpsc
 
+In order to share the remote clone at the above path across users on the
+server, tell git to create all files with group-writeable permission, by
+overriding the `git` command in your shell profile file (HPSC SW stack requires
+Bash):
+
+    $ echo 'git() { (umask g=rwx && git "$@") }' >> ~/.bashrc
+
 Build the HPSC SDK
 ------------------
+
+A useful configuration to do once is to override the `make` command in your
+shell profile file, such that all invocations of `make` are parallel:
+
+    $ echo 'alias make="make -j16"' >> ~/.bashrc
 
 Enter the Bash shell and enter the repository directory and setup parallel make:
 
     $ bash
     $ cd hpsc
-    $ alias make="make -j16"
 
 Since the `scsrt` server is offline, set a variable to point to a directory
 with source tarballs (this dir already exists on the `scsrt` server, but in
