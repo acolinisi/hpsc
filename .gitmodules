@@ -53,4 +53,4 @@
 	url = /projects/boeing/isi/hpsc/ssw/hpps/yocto/meta-hpsc
 [submodule "sdk/zebu"]
 	path = sdk/zebu
-	url = /projects/boeing/isi/zebu
+	url = /projects/boeing/isi/hpsc/sdk/zebu
