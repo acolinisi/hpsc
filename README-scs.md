@@ -18,7 +18,7 @@ server, tell git to create all files with group-writeable permission, by
 overriding the `git` command in your shell profile file (HPSC SW stack requires
 Bash):
 
-    $ echo 'git() { (umask g=rwx && git "$@") }' >> ~/.bashrc
+    $ echo 'git() { (umask g=rwx && command git "$@") }' >> ~/.bashrc
 
 Build the HPSC SDK
 ------------------
