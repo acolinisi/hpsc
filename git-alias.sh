@@ -16,6 +16,16 @@ gmn() {
 		else echo WARN: no branch \$($gbc) in remote $remote; fi"
 }
 
+# For each sobmodule, push the given branch if it exists
+gmp() {
+	local remote=$1; remote=${remote:=origin}
+	local br="$2"
+	git submodule foreach \
+		"if git rev-parse $br 2>/dev/null 1>&2; \
+		then echo git push $remote $br:$br && git push $remote $br:$br; \
+		else echo WARN: no branch $br; fi"
+}
+
 # For each submdule, checkout the given branch if current hash matches; useful
 # for re-attaching child repos to a branch after 'git sumodule update'.
 gmk() {
