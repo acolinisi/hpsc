@@ -1,0 +1,6 @@
+# Directory with fetched source tarballs for Yocto, included into HPSC source
+# tarball by packager.
+hpps/yocto/poky_dl
+
+# Build output directory
+prof/
