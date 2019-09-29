@@ -1,48 +1,55 @@
-# HOW TO: HPSC SW stack in Qemu and Zebu on SCS server
+HOW TO: Run the HPSC SSW stack in Qemu and Zebu on SCS server
 
 Get the source
---------------
+==============
 
 On the `scsrt` server (not `scs` server), create a working directory for you on
 the network share:
 
-    $ mkdir /projects/boeing/`whoami`
-    $ cd /projects/boeing/`whoami`
+    $ mkdir /projects/boeing/$(whoami)
+    $ cd /projects/boeing/$(whoami)
 
 Get the source by cloning `zebu` branch:
 
     $ git clone --recursive -b zebu /projects/boeing/isi/hpsc
 
-In order to share the remote clone at the above path across users on the
-server, tell git to create all files with group-writeable permission, by
-overriding the `git` command in your shell profile file (HPSC SW stack requires
-Bash):
+Configure the environment for SCS server
+========================================
 
-    $ echo 'git() { (umask g=rwx && command git "$@") }' >> ~/.bashrc
+Working on SCS server requires some configuration, to handle the fact
+that the server is offline (without Internet access), and that the
+bare clone of the source repository as well as some pre-fetched sources
+are accessed by multiple users. Also, setups all invocations of make
+to be parallel.
+
+All work on HPSC stack can only be done from Bash shell, not the default
+Csh shell, so every time you login to the SCS server, launch the bash
+shell as the first thing you do:
+
+	$ bash
+
+Then, every time you want to work on the HPSC, load the environment:
+
+    $ source /projects/boeing/$(whoami)/hpsc/scs-env.sh
+
+Alternatively, confgure Bash to autoload this environment (the pollution
+of the environment from this script is harmless w.r.t. to non-HPSC
+tasks you care to run on the server, as opposed to HPSC SDK environment
+discussed below that should not be autoloaded):
+
+    $ echo "source /projects/boeing/$(whoami)/hpsc/scs-env.sh" >> ~/.bashrc
 
 Build the HPSC SDK
-------------------
+==================
 
-A useful configuration to do once is to override the `make` command in your
-shell profile file, such that all invocations of `make` are parallel:
+Make sure you have setup environment in your current shell,
+as described in the previous section.
 
-    $ echo 'alias make="make -j16"' >> ~/.bashrc
+Enter the top-level directory in the working copy of the HPSC repository:
 
-Enter the Bash shell and enter the repository directory and setup parallel make:
-
-    $ bash
     $ cd hpsc
 
-Since the `scsrt` server is offline, set a variable to point to a directory
-with source tarballs (this dir already exists on the `scsrt` server, but in
-case you want to create it: on an online machine, run `make sdk-fetch` and the
-directory will be populated at `sdk/bld/fetch`):
-
-    $ export FETCH_CACHE=/projects/boeing/isi/hpsc/sdk/bld/fetch
-
-Build the sysroot against which the SDK will be built (when `FETCH_CACHE` is
-given, source taballs are fetched from there instead of from the Internet),
-takes about 5 minutes on 20 cores:
+Build the sysroot against which the SDK will be build (~5 min on 16 cores):
 
     $ make sdk-deps-sysroot
 
@@ -58,233 +65,72 @@ Load the SDK into the environment (do this every time you start a new shell):
 
     $ source sdk/bld/env.sh
 
-Build the system software stack and Zebu memory images
-------------------------------------------------------
+More details in the generic documentation at
+[ssw/hpsc-utils/doc/README.md](ssw/hpsc-utils/doc/README.md)
 
-Assumes `bash` shell and that SDK was loaded into the environment (see above).
+Build, run, and debug the HPSC System Software Stack
+====================================================
 
-Change to `ssw/` directory (or, alternatively, prefix all targets with `ssw-`):
+Assumes the SCS environment *and* the SDK environment where both loaded into
+the current shell (see the above two sections).
+
+Change to `ssw/` directory (or, alternatively, prefix all targets with `ssw-`
+at the top level):
 
     $ cd ssw
 
-Build the software stack for the target:
+The HPSC SSW stack can be built in one of several configuration profiles.  List
+the available configuration profiles with/without their descriptions, runnable
+profiles are prefixed with `sys-`:
 
-    $ make PROF=zebu
+	$ make
+	$ make list-sys
 
-To clean the build:
+Note that the profile description indicates if the profile depends on other
+profiles, which must be built ahead of time (manually, and in sequence one at a
+time -- a current limitation of infrastructure).
 
-    $ make PROF=zebu clean
+Not all profiles are supported on Zebu, some are listed below.
+Generally, profiles runnable on Zebu are also runnable in Qemu.
 
-To build memory image for loading into Zebu (to clean, append `-clean` suffix):
+	sys-preload-trch-bm-min-hpps-booti-busybox
+	sys-preload-trch-bm-min-hpps-busybox (slower)
+	sys-preload-trch-bm-min-hpps-yocto-initramfs (only if Zebu mem > 128 MB; not yet)
 
-    $ make PROF=zebu zebu-hpps
+Note: profiles with full TRCH config (i.e. without `trch-bm-min`) will run on
+Zebu but not on Qemu with HW device tree configured to match Zebu HW, because
+Qemu executes TRCH and TRCH will fail if it accesses non-existant devices.
 
-A single unstriped image in binary format (that must be loaded into each of the
-stripped DDR banks by Zebu) will be created at: `bld/prof/zebu/zebu/mem.bin`.
+To only produce the artifacts necessary to run in Zebu (memory images, memory
+loader configuration file), without actually running, for the selected profile,
+for example for `sys-preload-trch-bm-min-hpps-booti-busybox` profile:
 
-The `zebu-hpps` target builds the target software binaries as a prerequisite,
-or they can be built explicitly:
+	$ make prof/sys-preload-trch-bm-min-hpps-booti-busybox/bld/zebu
 
-    make PROF=zebu hpps
+The generated configuration file for Zebu with paths to generated memory images
+and the information into which memory each image should be loaded is going to
+be generated in the following file:
 
-The dependency build for `hpps` target should pick up changes to the source and
-rebuild the software binaries when you re-make the target. But, in case you
-need to clean currently built binaries and Zebu memory images:
+	$ cat prof/sys-preload-trch-bm-min-hpps-booti-busybox/bld/zebu/preload.zebu.mem.map
 
-    make PROF=zebu hpps-clean zebu-hpps-clean
+The memory images will be in that same directory, named `*.mem.raw` or
+`*.mem.vhex`, for example, the memory image for the HPPS DRAM will be:
 
-These binaries can also be built individually via the following targets and can
-be cleaned via the same targets suffixed with `-clean`.
+	$ ls prof/sys-preload-trch-bm-min-hpps-booti-busybox/bld/zebu/hpps.dram.mem.raw
 
-    make PROF=zebu hpps-atf hpps-uboot hpps-linux
+To run the selected profile in Zebu:
 
-The list of generated binaries and the memory address where Qemu will preload
-them to, is in `ssw/hpsc-utils/conf/dram-boot/qemu/preload.prof.mem.map`.
+	$ make prof/sys-preload-trch-bm-min-hpps-booti-busybox/run/zebu
 
-The corresponding binaries in ELF format (for disassembly and debugging):
+To run the selected profile in Qemu:
 
-* ATF: `ssw/hpps/arm-trusted-firmware/build/debug/hpsc/bl31/bl31.elf`
-* U-boot: `ssw/hpps/u-boot/u-boot`
-* Linux kernel: `ssw/hpps/linux/vmlinux`
+	$ make prof/sys-preload-trch-bm-min-hpps-booti-busybox/run/qemu
 
-Run Qemu emulator
------------------
+To alter Zebu configuration and scripts, modify the files in `sdk/zebu/`.
 
-Since Zebu emulator takes a long time to start, it is useful to first run the
-exact same software binaries in Qemu emulator, after every code edit.
-
-Launch Qemu with the built software:
-
-    $ make PROF=zebu qrun
-
-Look for the message:
-
-    Attach to screen session from another window with:
-    screen -r hpsc-0-hpps
-    Waiting for 'continue' (aka. reset) command via GDB or QMP
-    connection...
-
-Also look for the message (this port number will be used later):
-
-    GDB_PORT = 3037 (your number will differ)
-
-From another terminal window, start the `bash` shell and load the SDK:
-   
-    $ bash
-    $ cd /projects/boeing/$(whoami)/hpsc
-    $ source sdk/bld/env.sh
-
-Connect to the serial console for HPPS UART port:
-
-    $ screen -r hpsc-0-hpps
-
-This window will show output from the Synopsys UART.  You only need to do this
-once, and leave it open; when you re-run, it will re-attach to the open session.
-
-To quit Qemu, issue the command at the monitor prompt (press Enter if no prompt
-visible):
-
-    (qemu) quit
-
-You can also invoke Qemu manually via `sdk/hpsc-sdk-tools/launch-qemu` script,
-for the command see the `qrun` target in `ssw/Makefile`.
-
-Run Zebu emulator
------------------
-
-Launch Qemu with the built software:
-
-    $ make PROF=zebu zrun
-
-In a different shell, connect to the serial console on HPPS UART port:
-
-    $ screen -r zebu-uart-hpps
-
-At the `zRci` prompt, when paused, to continue running for some cycles:
-
-    % run 10000000
-
-To exit:
-
-    % quit
-
-A stackdump on exit is commonly observed. Also, if the process fails to exit,
-then send it to background with `Ctrl-Z` and kill the job with `SIGKILL`:
-
-    $ kill -9 %1
-
-You can also invoke Zebu manually via `sdk/zebu/bin/launch-zebu` script by
-passing it the Zebu memory image built in the build section of this guide.  For
-the command see the `zrun` target in `ssw/Makefile`, note that the script must
-be invoked in a specific shell.
-
-Debugging target code in Qemu
------------------------------
-
-To disassemble a built binary, invoke objdump on the binary in ELF format:
-
-    $ aarch64-poky-linux-objdump -D path/to/elf_binary > binary.S
-
-From a third shell window launch GDB debugger with the code of the
-target binary (in ELF format, which may be a different file from the binary
-that is loaded into target memory in Qemu/Zebu), and attach to Qemu:
-
-    $ bash
-    $ cd hpsc
-    $ source sdk/bld/env.sh
-
-To debug the ATF binary:
-
-    $ aarch64-poky-linux-gdb ssw/hpps/arm-trusted-firmware/build/hpsc/debug/bl31/bl31.elf 
-
-Or, to debug the U-boot binary:
-
-    $ aarch64-poky-linux-gdb ssw/hpps/u-boot-a53/u-boot
-
-Or, to debug Linux kernel binary:
-
-    $ aarch64-poky-linux-gdb ssw/hpps/linux/vmlinux
-
-Then, attach the GDB client to the Qemu emulator, replacing 3037 in the example
-below with GDB_PORT from `run` target output (see instructions above):
-
-    (gdb) target remote localhost:3037
-
-You should see when gdb attaches to the emulator:
-
-* for ATF
-
-        Remote debugging using localhost:1234
-        bl31_entrypoint () at bl31/aarch64/bl31_entrypoint.S:58
-
-* for U-boot
-
-        Remote debugging using localhost:1234
-        _start () at arch/arm/cpu/armv8/start.S:31
-        31              b       reset
-
-* for Linux
-
-        Something similar. See notes in the "U-boot" item above.
-
-Keep in mind that after attaching, the processor is still halted, so will still
-be at the ATF entry point even though u-boot binary or Linux kernel binary are
-loaded into the GDB debugger.
-
-To execute until entry into u-boot, set a breakpoint at the u-boot entry point:
-        
-    (gdb) break *0x80020000
-
-To execute until entry into kernel, set a breakpoint at the kernel entry point:
-
-    (gdb) break *0x80480000
-
-To tell GDB to automatically display the current program counter after every step:
-
-    (gdb) display/i $pc
-
-To see register values:
-
-    (gdb) info reg
-
-To step to the next instruction:
-
-    (gdb) stepi
-
-When GDB attaches, the target execution is halted, to continue execution:
-
-    (gdb) cont
-
-To set a breakppoint (tab completion on the function name should work):
-
-    (gdb) break c_function_name
-
-To set a breakpoint at an address:
-
-    (gdb) break *0x80000000
-
-To set a breakpoint at line 123 in file `file.c`:
-
-    (gdb) break file.c:123
-
-To continue after a breakpoint:
-
-    (gdb) cont
-
-
-To re-run everything:
-
-First, detach gdb with:
-    (gdb) detach
-
-Kill Qemu at the `(qemu)` prompt (press enter if you do not see the prompt):
-
-    (qemu) quit
-
-Then, re-run Qemu using the make target given in the beginning of this guide.
-
-Then, re-attach gdb from the gdb session that is still running, using
-the same `target remote` command as before.
+See instructions in the generic documentation for how to rebuild, run, and
+debug a profile in more detail:
+[ssw/hpsc-utils/doc/README.md](ssw/hpsc-utils/doc/README.md)
 
 Transfering commits to and from server
 --------------------------------------
@@ -313,66 +159,68 @@ or push to the server, and to fetch from and push to the Internet repository.
 There are two options for creating this intemediate clone: either clone the
 whole repository or clone individual components.
 
-* Option A: clone the whole repository
+### Option A: clone the whole repository
 
-  Clone the repository from the `scsrt` server to your online host and re-point
-  the submodule paths to refer to the server via SSH (`sdk/qemu` requires an
-  extra step because it uses submodules itself):
+Clone the repository from the `scsrt` server to your online host and re-point
+the submodule paths to refer to the server via SSH (`sdk/qemu` requires an
+extra step because it uses submodules itself):
 
-            $ git clone scsrt:/projects/boeing/your_scs_username/hpsc
-            $ cd hpsc
-            $ sed -i 's#url = /#url = scsrt:/#' .gitmodules
-            $ git submodule init
-            $ git submodule update sdk/qemu
-            $ sed -i 's#url = /#url = scsrt:/#' sdk/qemu/.gitmodules
-            $ git submodule update --recursive
+	$ git clone scsrt:/projects/boeing/your_scs_username/hpsc
+	$ cd hpsc
+	$ sed -i 's#url = /#url = scsrt:/#' .gitmodules
+	$ git submodule init
+	$ git submodule update sdk/qemu
+	$ sed -i 's#url = /#url = scsrt:/#' sdk/qemu/.gitmodules
+	$ git submodule update --recursive
 
-  For each component you are interested in, add the Internet remote clone, for
-  example, for HPPS Linux:
+For each component you are interested in, add the Internet remote clone, for
+example, for HPPS Linux:
 
-            $ cd ssw/hpps/linux
-            $ git remote add gh git@github.com:ISI-apex/linux.git
+	$ cd ssw/hpps/linux
+	$ git remote add gh git@github.com:ISI-apex/linux.git
 
-  To fetch commits from the server and push them to the (Internet) remote:
+To fetch commits from the server and push them to the (Internet) remote:
 
-            $ cd ssw/hpps/linux
-            $ git fetch origin
-            $ git push gh origin/somebranch:somebranch
+	$ cd ssw/hpps/linux
+	$ git fetch origin
+	$ git push gh origin/somebranch:somebranch
 
-  Or, to push commits to the server:
+Or, to push commits to the server:
 
-            $ cd ssw/hpps/linux
-            $ git push origin hpsc:hpsc
+	$ cd ssw/hpps/linux
+	$ git push origin hpsc:hpsc
 
-* Option B: clone individual components
+### Option B: clone individual components
 
-  Clone each component your are interested in, e.g. for HPPS Linux:
+Clone each component your are interested in, e.g. for HPPS Linux:
 
-            $ git clone scsrt:/projects/boeing/your_scs_username/hpsc/ssw/hpps/linux
-            $ cd linux
-            $ git remote add gh git@github.com:ISI-apex/linux.git
+	$ git clone scsrt:/projects/boeing/your_scs_username/hpsc/ssw/hpps/linux
+	$ cd linux
+	$ git remote add gh git@github.com:ISI-apex/linux.git
 
-   Fetching commits from server and pushing them to other remotes is same as
-   for Option A.
+Fetching commits from server and pushing them to other remotes is same as
+for Option A.
 
-* Option C: add a remote to existing clone
+### Option C: add a remote to an existing clone
 
-  If you already have a clone of an existing component, then you can add
-  the server clone as remote, e.g. for HPPS Linux:
+If you already have a clone of an existing component, then you can add
+the server clone as remote, e.g. for HPPS Linux:
 
-            $ cd your/existing/linux
-            $ git remote add scsrt scsrt:/projects/boeing/your_scs_username/hpsc/ssw/hpps/linux
+	$ cd your/existing/linux
+	$ git remote add scsrt scsrt:/projects/boeing/your_scs_username/hpsc/ssw/hpps/linux
 
-  To fetch commits from the server and push them to the above remote:
+To fetch commits from the server and push them to the above remote:
 
-            $ cd ssw/hpps/linux
-            $ git fetch scsrt
-            $ git push origin scsrt/somebranch:somebranch
+	$ cd ssw/hpps/linux
+	$ git fetch scsrt
+	$ git push origin scsrt/somebranch:somebranch
 
-  Or, to push commits to the server:
+Or, to push commits to the server:
 
-            $ cd ssw/hpps/linux
-            $ git push scsrt somebranch:somebranch
+	$ cd ssw/hpps/linux
+	$ git push scsrt somebranch:somebranch
+
+## Pushing into a clone
 
 Note that to push, the destination repo on the server must not be checked out
 at the branch to which you are pushing. If it is, then either push to a
