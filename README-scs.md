@@ -80,11 +80,16 @@ at the top level):
     $ cd ssw
 
 The HPSC SSW stack can be built in one of several configuration profiles.  List
-the available configuration profiles with/without their descriptions, runnable
-profiles are prefixed with `sys-`:
+the available configuration profiles (runnable profiles are prefixed with
+`sys-`):
 
 	$ make
 	$ make list/sys
+
+To list profiles along with descriptions:
+
+	$ make desc
+	$ make desc/sys
 
 Note that the profile description indicates if the profile depends on other
 profiles, which must be built ahead of time (manually, and in sequence one at a
