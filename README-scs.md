@@ -61,12 +61,16 @@ Build the SDK including Zebu harness (includes Qemu emulator and host tools):
 
     $ make sdk sdk/zebu
 
-Load the SDK into the environment (do this every time you start a new shell):
-
-    $ source sdk/bld/env.sh
-
 More details in the generic documentation at
 [ssw/hpsc-utils/doc/README.md](ssw/hpsc-utils/doc/README.md)
+
+Load the SDK into shell environment
+====================================
+
+Load the SDK into the environment (***do this every time you start a new
+shell***):
+
+    $ source sdk/bld/env.sh
 
 Build, run, and debug the HPSC System Software Stack
 ====================================================
