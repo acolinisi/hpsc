@@ -84,7 +84,7 @@ the available configuration profiles with/without their descriptions, runnable
 profiles are prefixed with `sys-`:
 
 	$ make
-	$ make list-sys
+	$ make list/sys
 
 Note that the profile description indicates if the profile depends on other
 profiles, which must be built ahead of time (manually, and in sequence one at a
@@ -100,6 +100,22 @@ Generally, profiles runnable on Zebu are also runnable in Qemu.
 Note: profiles with full TRCH config (i.e. without `trch-bm-min`) will run on
 Zebu but not on Qemu with HW device tree configured to match Zebu HW, because
 Qemu executes TRCH and TRCH will fail if it accesses non-existant devices.
+
+To run the selected profile in Zebu:
+
+	$ make prof/sys-preload-trch-bm-min-hpps-booti-busybox/run/zebu
+
+To run the selected profile in Qemu:
+
+	$ make prof/sys-preload-trch-bm-min-hpps-booti-busybox/run/qemu
+
+## Building memory images and other artifacts invidually
+
+To alter Zebu configuration and scripts, modify the files in `sdk/zebu/`.
+
+The above targets automatically build all artifacts necessary for the
+respective run. It is also possible to build those artifacts individually, for
+example the memory images loaded into the emulator, as described below.
 
 To only produce the artifacts necessary to run in Zebu (memory images, memory
 loader configuration file), without actually running, for the selected profile,
@@ -118,22 +134,14 @@ The memory images will be in that same directory, named `*.mem.raw` or
 
 	$ ls prof/sys-preload-trch-bm-min-hpps-booti-busybox/bld/zebu/hpps.dram.mem.raw
 
-To run the selected profile in Zebu:
-
-	$ make prof/sys-preload-trch-bm-min-hpps-booti-busybox/run/zebu
-
-To run the selected profile in Qemu:
-
-	$ make prof/sys-preload-trch-bm-min-hpps-booti-busybox/run/qemu
-
-To alter Zebu configuration and scripts, modify the files in `sdk/zebu/`.
+## Complete documentation on building and running profiles
 
 See instructions in the generic documentation for how to rebuild, run, and
 debug a profile in more detail:
 [ssw/hpsc-utils/doc/README.md](ssw/hpsc-utils/doc/README.md)
 
 Transfering commits to and from server
---------------------------------------
+======================================
 
 The `scsrt` server is "offline" (i.e. cannot reach Internet hosts) and cannot
 directly push to repositories over the Internet. To push to repos over
