@@ -101,11 +101,11 @@ Note: profiles with full TRCH config (i.e. without `trch-bm-min`) will run on
 Zebu but not on Qemu with HW device tree configured to match Zebu HW, because
 Qemu executes TRCH and TRCH will fail if it accesses non-existant devices.
 
-To run the selected profile in Zebu:
+To (incrementally) build and run the selected profile in Zebu:
 
 	$ make prof/sys-preload-trch-bm-min-hpps-booti-busybox/run/zebu
 
-To run the selected profile in Qemu:
+To (incrementally) build run the selected profile in Qemu:
 
 	$ make prof/sys-preload-trch-bm-min-hpps-booti-busybox/run/qemu
 
