@@ -51,7 +51,7 @@ Enter the top-level directory in the working copy of the HPSC repository:
 
 Build the sysroot against which the SDK will be build (~5 min on 16 cores):
 
-    $ make sdk-deps-sysroot
+    $ make sdk/deps/sysroot
 
 Load the sysroot into the environment (needed only for building the SDK):
 
@@ -59,7 +59,7 @@ Load the sysroot into the environment (needed only for building the SDK):
 
 Build the SDK including Zebu harness (includes Qemu emulator and host tools):
 
-    $ make sdk sdk-zebu
+    $ make sdk sdk/zebu
 
 Load the SDK into the environment (do this every time you start a new shell):
 
