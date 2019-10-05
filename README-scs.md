@@ -180,6 +180,36 @@ First, discard all local changes to ensure the working copy is clean:
     $ git reset --hard origin/zebu
     $ git submodule update
 
+Ensure that your working copy is clean (has no modifications in it):
+
+    $ git status
+        On branch zebu
+        Your branch is up to date with 'origin/zebu'.
+
+        nothing to commit, working tree clean
+
+If you see `modified` for some module, for example for `sdk/zebu` module,
+then that module source contains some modifications:
+
+        modified:   sdk/zebu
+
+The modifications could either be:
+* `(untracked content)`: files not version controled and not ignored exist in *
+the directory (these may be stale cache files from Networked File System
+(`.nfs*`)) -- usually it is safe to ignore these modifications, but if you can,
+then delete the untracked files listed by `git status` run in the module
+directory.
+* `(modified content)`: sources have been edited -- you must navigate to the
+module directory and run `git reset --hard HEAD` to discard those modifications.
+If you want to keep the modifications, then first `git stash save`.
+* `(new commits)`: you have committed something. If you want to keep these
+commits, then navigate into the module directory and put the commits onto a
+branch `git checkout -b branch-with-changes`: you can reapply them after you update
+your working copy. Otherwise, you can ignore this `modified` state.
+
+Proceed only if `git status` reports that you have no modifications, otherwise
+the following commands will fail.
+
 Then, fetch the commits with the updates into your local clone, without
 merging anything yet:
 
