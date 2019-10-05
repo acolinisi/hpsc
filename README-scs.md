@@ -67,8 +67,10 @@ More details in the generic documentation at
 Load the SDK into shell environment
 ====================================
 
-Load the SDK into the environment (***do this every time you start a new
-shell***):
+Load the SDK into the environment. ***Do this every time you start a new
+shell***, but do NOT automatically load it in your shell profile, e.g. do not
+put it into ~/.bashrc or similar because it will pollute the environment and
+will break non-HPSC related tasks that you might work on on in strange ways):
 
     $ source sdk/bld/env.sh
 
@@ -114,9 +116,21 @@ To (incrementally) build and run the selected profile in Zebu:
 
 	$ make prof/sys-preload-trch-bm-min-hpps-booti-busybox/run/zebu
 
+In a different shell (also with SDK environment loaded!), connect to the serial
+console on HPPS UART:
+
+    $ screen -r zebu-uart-hpps
+
 To (incrementally) build run the selected profile in Qemu:
 
 	$ make prof/sys-preload-trch-bm-min-hpps-booti-busybox/run/qemu
+
+In a different shell (also will SDK environment loaded!) connect to the serial
+console screen session printed when Qemu runs.  Use a separate shell for each
+serial port (and make sure that each shell has the SDK environment loaded into
+it!), for HPPS:
+
+    $ screen -r hpsc-0-hpps
 
 ## Building memory images and other artifacts invidually
 
