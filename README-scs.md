@@ -221,9 +221,9 @@ to their new commits:
     $ git reset --hard origin/zebu
     $ git submodule update
 
-Note: we do a reset instead of a merge because this is simpler and more
-robust, and we may override the branch (aka. force-push) which would
-prevent merges from working.
+Note: we do a fetch+reset instead of a merge/pull because this is simpler and
+more robust, and sometimes we might override the branch (aka. force-push) which
+would prevent merges from working.
 
 If you know which hash you want your working copy to be updated to,
 you may check the current hash of your working copy to make sure that
