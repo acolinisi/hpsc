@@ -163,6 +163,54 @@ See instructions in the generic documentation for how to rebuild, run, and
 debug a profile in more detail:
 [ssw/hpsc-utils/doc/README.md](ssw/hpsc-utils/doc/README.md)
 
+Updating your working copy of the repository
+============================================
+
+Updates are going to be pushed to the repository clone on the SCS server from
+which you cloned your working copy. To get the updates, first make sure that
+you have no modifications to any source files. If you do, and you care about
+them, then do not proceed with the update, and instead figure out how to
+`git stash save` your changes or commit them to a local branch. If you wish
+to overwrite your local modifications, then update as follows.
+
+Remember to load the SDK environment into your shell before proceeding.
+
+First, discard all local changes to ensure the working copy is clean:
+
+    $ git reset --hard origin/zebu
+    $ git submodule update
+
+Then, fetch the commits with the updates into your local clone, without
+merging anything yet:
+
+    $ git fetch origin
+
+Then, reset your working copy to the remote commit, and checkout submodules
+to their new commits:
+
+    $ git reset --hard origin/zebu
+    $ git submodule update
+
+Note: we do a reset instead of a merge because this is simpler and more
+robust, and we may override the branch (aka. force-push) which would
+prevent merges from working.
+
+If you know which hash you want your working copy to be updated to,
+you may check the current hash of your working copy to make sure that
+it matches the desired hash:
+
+    $ git log -1
+
+If you do not know what specifically has changed, then clean and rebuild the
+SDK and the SSW stack to be safe (you do not usually need to rebuild the
+dependency sysroot) -- in the following commands, replace `PROFILE` with the
+name of the profile you are working with:
+
+    $ make sdk/clean sdk/fetch/clean sdk/zebu/clean
+    $ make sdk sdk/zebu
+    $ make ssw/prof/PROFILE/clean
+    $ make ssw/prof/PROFILE
+
 Transfering commits to and from server
 ======================================
 
