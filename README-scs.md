@@ -236,8 +236,13 @@ group of components:
 
 1. Dependency sysroot: usually, you will not need to rebuild the dependency
 sysroot, since it is unlikely to change often, however if you know sysroot
-has changed, to clean and rebuild it:
+has changed, to clean and rebuild it, first open a new Bash shell without
+the SDK environment loaded (it is not enough to run `bash`, you need a
+fresh shell):
 
+        (ssh into the server / open a new terminal)
+        $ bash
+        $ source hpsc/scs-env.sh
         $ make sdk/deps/clean sdk/hpsc-sdk-tools/sysroot/clean
         $ make sdk/deps/sysroot
 
