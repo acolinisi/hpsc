@@ -231,13 +231,24 @@ it matches the desired hash:
 
     $ git log -1
 
-If you do not know what specifically has changed, then clean and rebuild the
-SDK and the SSW stack to be safe (you do not usually need to rebuild the
-dependency sysroot) -- in the following commands, replace `PROFILE` with the
-name of the profile you are working with:
+Now you have the updated sources, and you need to clean, then re-build each
+group of components:
 
-    $ make sdk/clean sdk/fetch/clean sdk/zebu/clean
-    $ make sdk sdk/zebu
+1. Dependency sysroot: usually, you will not need to rebuild the dependency
+sysroot, since it is unlikely to change often, however if you know sysroot
+has changed, to clean and rebuild it:
+
+        $ make sdk/deps/clean sdk/hpsc-sdk-tools/sysroot/clean
+        $ make sdk/deps/sysroot
+
+2. The HPSC SDK including Zebu sub-component (do rebuild this when unsure):
+
+        $ make sdk/clean sdk/fetch/clean sdk/zebu/clean
+        $ make sdk sdk/zebu
+
+3. The HPSC SSW stack, in the following commands, replace `PROFILE` with the
+name of the profile you are working with (always rebuild this):
+
     $ make ssw/prof/PROFILE/clean
     $ make ssw/prof/PROFILE
 
