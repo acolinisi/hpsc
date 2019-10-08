@@ -249,8 +249,8 @@ has changed, to clean and rebuild it:
 3. The HPSC SSW stack, in the following commands, replace `PROFILE` with the
 name of the profile you are working with (always rebuild this):
 
-    $ make ssw/prof/PROFILE/clean
-    $ make ssw/prof/PROFILE
+        $ make ssw/prof/PROFILE/clean
+        $ make ssw/prof/PROFILE
 
 Transfering commits to and from server
 ======================================
