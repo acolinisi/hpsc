@@ -11,9 +11,11 @@ gmn() {
 	local remote=$1; remote=${remote:=origin}
 	local gbc="git rev-parse --abbrev-ref HEAD"
 	git submodule foreach \
-		"if git rev-parse $remote/\$($gbc) 2>/dev/null 1>&2; \
-		then git log --oneline $remote/\$($gbc)..\$($gbc); \
-		else echo WARN: no branch \$($gbc) in remote $remote; fi"
+		"if [ \$($gbc) != HEAD ]; \
+		 then if git rev-parse $remote/\$($gbc) 2>/dev/null 1>&2; \
+			 then git log --oneline $remote/\$($gbc)..\$($gbc); \
+			 else echo WARN: no branch \$($gbc) in remote $remote; fi \
+		 else echo WARN: not on any branch; fi"
 }
 
 # For each sobmodule, push the given branch if it exists
