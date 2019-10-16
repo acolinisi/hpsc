@@ -3,8 +3,18 @@ alias gd='git diff'
 alias gds='git diff --staged'
 
 alias gm='git submodule'
+alias gmf='git submodule foreach'
 alias gms='git submodule summary'
 alias gmu='git submodule update'
+
+# For each submodule print current local branch
+gmb() {
+       local gbc="git rev-parse --abbrev-ref HEAD"
+       git submodule foreach \
+		"if [ \$($gbc) != HEAD ]; \
+                then echo \$($gbc); \
+                else echo WARN: not on any branch; fi"
+}
 
 # For each sobmodule, list new commits on current branch not pushed to remote
 gmn() {
