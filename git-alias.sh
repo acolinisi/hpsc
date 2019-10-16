@@ -3,6 +3,7 @@ alias gd='git diff'
 alias gds='git diff --staged'
 
 alias gm='git submodule'
+alias gmf='git submodule foreach'
 alias gms='git submodule summary'
 alias gmu='git submodule update'
 
