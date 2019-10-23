@@ -5,7 +5,7 @@
 [submodule "sdk/qemu-devicetrees"]
 	path = sdk/qemu-devicetrees
 	url = /projects/boeing/isi/hpsc/sdk/qemu-devicetrees
-	branch = zebu
+	branch = snap
 [submodule "sdk/hpsc-sdk-tools"]
 	path = sdk/hpsc-sdk-tools
 	url = /projects/boeing/isi/hpsc/sdk/hpsc-sdk-tools
