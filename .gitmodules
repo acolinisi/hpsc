@@ -1,47 +1,51 @@
-[submodule "qemu"]
+[submodule "sdk/qemu"]
 	path = sdk/qemu
 	url = /projects/boeing/isi/hpsc/sdk/qemu
-	branch = snap
-[submodule "qemu-devicetrees"]
+	branch = zebu
+[submodule "sdk/qemu-devicetrees"]
 	path = sdk/qemu-devicetrees
 	url = /projects/boeing/isi/hpsc/sdk/qemu-devicetrees
-	branch = snap
-[submodule "hpsc-baremetal"]
-	path = ssw/hpsc-baremetal
-	url = /projects/boeing/isi/hpsc/ssw/hpsc-baremetal
-	branch = snap
-[submodule "hpsc-utils"]
-	path = ssw/hpsc-utils
-	url = /projects/boeing/isi/hpsc/ssw/hpsc-utils
-	branch = snap
-[submodule "rtps/r52/u-boot"]
-	path = ssw/rtps/r52/u-boot
-	url = /projects/boeing/isi/hpsc/ssw/rtps/r52/u-boot
-	branch = snap
-[submodule "hpps/arm-trusted-firmware"]
-	path = ssw/hpps/arm-trusted-firmware
-	url = /projects/boeing/isi/hpsc/ssw/hpps/arm-trusted-firmware
-	branch = snap
-[submodule "hpps/u-boot"]
-	path = ssw/hpps/u-boot
-	url = /projects/boeing/isi/hpsc/ssw/hpps/u-boot
-	branch = snap
-[submodule "hpps/linux"]
-	path = ssw/hpps/linux
-	url = /projects/boeing/isi/hpsc/ssw/hpps/linux
-	branch = snap
-[submodule "hpps/userspace/busybox"]
-	path = ssw/hpps/busybox
-	url = /projects/boeing/isi/hpsc/ssw/hpps/busybox
-[submodule "ssw/rtps/a53/arm-trusted-firmware"]
-	path = ssw/rtps/a53/arm-trusted-firmware
-	url = /projects/boeing/isi/hpsc/ssw/rtps/a53/arm-trusted-firmware
-[submodule "ssw/rtps/a53/u-boot"]
-	path = ssw/rtps/a53/u-boot
-	url = /projects/boeing/isi/hpsc/ssw/rtps/a53/u-boot
+	branch = zebu
 [submodule "sdk/hpsc-sdk-tools"]
 	path = sdk/hpsc-sdk-tools
 	url = /projects/boeing/isi/hpsc/sdk/hpsc-sdk-tools
+	brach = snap
+[submodule "ssw/hpsc-utils"]
+	path = ssw/hpsc-utils
+	url = /projects/boeing/isi/hpsc/ssw/hpsc-utils
+	branch = snap
+[submodule "ssw/hpsc-baremetal"]
+	path = ssw/hpsc-baremetal
+	url = /projects/boeing/isi/hpsc/ssw/hpsc-baremetal
+	branch = snap
+[submodule "ssw/rtps/r52/u-boot"]
+	path = ssw/rtps/r52/u-boot
+	url = /projects/boeing/isi/hpsc/ssw/rtps/r52/u-boot
+	branch = snap
+[submodule "ssw/rtps/a53/arm-trusted-firmware"]
+	path = ssw/rtps/a53/arm-trusted-firmware
+	url = /projects/boeing/isi/hpsc/ssw/rtps/a53/arm-trusted-firmware
+	branch = snap
+[submodule "ssw/rtps/a53/u-boot"]
+	path = ssw/rtps/a53/u-boot
+	url = /projects/boeing/isi/hpsc/ssw/rtps/a53/u-boot
+	branch = snap
+[submodule "ssw/hpps/arm-trusted-firmware"]
+	path = ssw/hpps/arm-trusted-firmware
+	url = /projects/boeing/isi/hpsc/ssw/hpps/arm-trusted-firmware
+	branch = snap
+[submodule "ssw/hpps/u-boot"]
+	path = ssw/hpps/u-boot
+	url = /projects/boeing/isi/hpsc/ssw/hpps/u-boot
+	branch = snap
+[submodule "ssw/hpps/linux"]
+	path = ssw/hpps/linux
+	url = /projects/boeing/isi/hpsc/ssw/hpps/linux
+	branch = snap
+[submodule "ssw/hpps/busybox"]
+	path = ssw/hpps/busybox
+	url = /projects/boeing/isi/hpsc/ssw/hpps/busybox
+	branch = snap
 [submodule "ssw/hpps/yocto/meta-openembedded"]
 	path = ssw/hpps/yocto/meta-openembedded
 	url = /projects/boeing/isi/hpsc/ssw/hpps/yocto/meta-openembedded
