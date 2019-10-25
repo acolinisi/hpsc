@@ -196,7 +196,7 @@ Updating your working copy
 
 Update will be pushed to the remote repository from which you cloned your
 working copy. To update your local repository follow the instructions in
-[README.md](README.md#Development workflow).
+[README.md](README.md#updating-your-working-copy-of-the-repository).
 
 Transfering commits to and from server
 ======================================
