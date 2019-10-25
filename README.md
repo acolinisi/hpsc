@@ -4,14 +4,35 @@ Holds references to commits of all repositories of HPSC project.
 Each commit in this repository designates a consistent snapshot
 of the HPSC codebase, i.e. an internal release.
 
-Clone this repository recusively to clone all submodules:
+## Cloning on an online host
 
-    $ git clone --recursive git@github.com:acolinisi/hpsc.git
+On a host that is online (with Internet access), you may clone this repository
+recusively to clone all submodules:
+
+    $ git clone --recursive https://github.com/acolinisi/hpsc.git
+
+## Cloning on an offline host
+
+On a host that is offline (without Internet access), and which has the parent
+repository, and all submodules available at a accessible path or URL, you have
+to clone the parent repository non-recursively, and then initialize the
+doubly-nested submodule URLs using a provided script:
+
+    $ git clone /path/to/hpsc
+    $ cd hpsc
+    $ ./init-relative.sh
+
+The script initializes all doubly-nested submodule URLs to URLs relative to the
+base URL, which by default is the path from where the parent was cloned (in the
+above example, `/path/to/hpsc`), but this default can be overriden by passing
+the desired base URL as an argument to `./init-relative.sh`.
+
+# Build and run
 
 For building and running, see the generic instructions in
 [ssw/hpsc-utils/doc/README.md](ssw/hpsc-utils/doc/README.md).
 
-## Development workflow
+# Development workflow
 
 Source some useful shell aliases and helpers for common git operations:
 
