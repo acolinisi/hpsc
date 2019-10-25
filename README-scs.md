@@ -133,6 +133,13 @@ above pattern filled in with:
 Profiles runnable on Zebu are also runnable in Qemu (Qemu will be configured to
 match the HW configuration of Zebu):
 
+***IMPORTANT***: When switching between different profiles, make sure to
+(shallowly) clean the new profile before using it (for details see section on
+switching profiles in
+[ssw/hpsc-utils/doc/README.md](ssw/hpsc-utils/doc/README.md)):
+
+	$ make ssw/prof/PROFILE/bld/clean
+
 To (incrementally) build and run the selected profile in Zebu (subsitute
 `PROFILE` with the full profile name):
 
