@@ -71,7 +71,7 @@ To discard all local changes (all modified files, untracked files, and even
 unpushed commits ***will be lost***, do not procede if you care about your
 changes, instead see next subsection):
 
-    $ git reset --hard origin/zebu
+    $ git reset --hard HEAD
     $ git submodule update
     $ git submodule foreach git reset --hard HEAD
     $ git submodule foreach git clean -df
@@ -92,7 +92,7 @@ on how to keep or discard them manually
 If you see `modified` for some module, for example for `sdk/zebu` module,
 then that module source contains some modifications:
 
-        modified:   sdk/zebu
+        modified:   sdk/qemu
 
 The modifications could either be:
 * `(untracked content)`: files not version controled and not ignored exist in *
@@ -118,10 +118,11 @@ anything yet:
 
     $ git fetch origin
 
-Reset your working copy to the remote commit, and checkout submodules to their
-new commits:
+Reset your working copy to the remote commit (replace `BRANCH` with the parent
+branch that you are working with, e.g. `master` or `zebu`), and checkout
+submodules to their new commits:
 
-    $ git reset --hard origin/zebu
+    $ git reset --hard origin/BRANCH
     $ git submodule update
 
 Note: we do a fetch+reset instead of a merge/pull because this is simpler and
@@ -142,9 +143,9 @@ you may need to re-build a subset of the following groups of components:
 
 1. Dependency sysroot (only relevant if you are using one at all): usually, you
    will not need to rebuild the dependency sysroot, since it is unlikely to
-change often, however if you know sysroot has changed, to clean and rebuild it,
-first open a new Bash shell ***without*** the SDK environment loaded (it is not
-enough to run `bash`, you need a fresh shell):
+   change often, however if you know sysroot has changed, to clean and rebuild
+   it, first open a new Bash shell ***without*** the SDK environment loaded (it
+   is not enough to run `bash`, you need a fresh shell):
 
         (ssh into the server / open a new terminal)
         $ bash
@@ -152,16 +153,23 @@ enough to run `bash`, you need a fresh shell):
         $ make sdk/deps/clean sdk/hpsc-sdk-tools/sysroot/clean
         $ make sdk/deps/sysroot
 
-2. The HPSC SDK including Zebu sub-component (do rebuild this when unsure) --
-make sure your existing SDK environment ***is*** loaded (`source
-sdk/bld/env.sh`):
+2. The HPSC SDK (do rebuild this when unsure) -- make sure your existing SDK
+   environment ***is*** loaded (`source sdk/bld/env.sh`):
 
-        $ make sdk/clean sdk/fetch/clean sdk/zebu/clean
-        $ make sdk sdk/zebu
+   a. Rebuild the main components of the SDK:
+
+            $ make sdk/clean sdk/fetch/clean
+            $ make sdk
+
+   b. If you are working with the Zebu emulator, rebuild the `zebu` subcompoent
+      of the SDK, since it is not built as part of the SDK by default:
+
+            $ make sdk/zebu/clean
+            $ make sdk/zebu
 
 3. The HPSC SSW stack, in the following commands, replace `PROFILE` with the
-name of the profile you are working with (always rebuild this) -- make sure the
-SDK environment ***is*** loaded:
+   name of the profile you are working with (always rebuild this) -- make sure
+   the SDK environment ***is*** loaded:
 
         $ make ssw/prof/PROFILE/clean
         $ make ssw/prof/PROFILE
