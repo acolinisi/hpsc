@@ -66,8 +66,7 @@ Build the SDK including Zebu harness (includes Qemu emulator and host tools):
 
     $ make sdk sdk/zebu
 
-More details in the generic documentation at
-[ssw/hpsc-utils/doc/README.md](ssw/hpsc-utils/doc/README.md)
+More details in the generic documentation in `ssw/hpsc-utils/doc/README.md`.
 
 Load the SDK into shell environment
 ====================================
@@ -135,8 +134,7 @@ match the HW configuration of Zebu):
 
 ***IMPORTANT***: When switching between different profiles, make sure to
 (shallowly) clean the new profile before using it (for details see section on
-switching profiles in
-[ssw/hpsc-utils/doc/README.md](ssw/hpsc-utils/doc/README.md)):
+switching profiles in `ssw/hpsc-utils/doc/README.md`):
 
 	$ make ssw/prof/PROFILE/bld/clean
 
@@ -188,8 +186,7 @@ The memory images will be in that same directory, named `*.mem.raw` or
 ## Complete documentation on building and running profiles
 
 See instructions in the generic documentation for how to rebuild, run, and
-debug a profile in more detail:
-[ssw/hpsc-utils/doc/README.md](ssw/hpsc-utils/doc/README.md)
+debug a profile in more detail: `ssw/hpsc-utils/doc/README.md`.
 
 Updating your working copy
 ==========================
