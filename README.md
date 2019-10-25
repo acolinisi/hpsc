@@ -43,8 +43,130 @@ Notable aliases:
 * `gms`: git submodule summary: show status of changes relative to ref in parent
 * `gnp`: for each submodule print commits in the current branch not in the
   respective branch in the remote (by default 'origin'), i.e. new unpushed.
-* `gmk`: for each submdule, checkout the given branch if current hash matches;
+* `gmk`: for each submodule, checkout the given branch if current hash matches;
    useful for re-attaching child repos to a branch after 'git sumodule update'.
+* `gmb`: for each submodule print the current local branch
+
+## Updating your working copy of the repository
+
+Updates are going to be pushed to the remote repository from which you cloned
+your working copy. 
+
+Remember to load the SDK environment into your shell before proceeding.
+
+### Clean your working copy
+
+Before you an update, it is essential that your working copy does not
+have any local modifications (i.e. is "clean").
+
+If you have modifications and you care to keep them, then do not proceed with
+the update, and instead figure out how to `git stash save` your changes or
+commit them to a local branch: some tips are given in the following subsection.
+
+To check for modification look at the output of the status command:
+
+    $ git status
+
+To discard all local changes (all modified files, untracked files, and even
+unpushed commits ***will be lost***, do not procede if you care about your
+changes, instead see next subsection):
+
+    $ git reset --hard origin/zebu
+    $ git submodule update
+    $ git submodule foreach git reset --hard HEAD
+    $ git submodule foreach git clean -df
+
+Ensure that your working copy is clean:
+
+    $ git status
+        On branch zebu
+        Your branch is up to date with 'origin/zebu'.
+
+        nothing to commit, working tree clean
+
+If you see modifications reported, you check the following section for details
+on how to keep or discard them manually
+
+#### Manually keep or discard modifications
+
+If you see `modified` for some module, for example for `sdk/zebu` module,
+then that module source contains some modifications:
+
+        modified:   sdk/zebu
+
+The modifications could either be:
+* `(untracked content)`: files not version controled and not ignored exist in *
+the directory (these may be stale cache files from Networked File System
+(`.nfs*`)) -- usually it is safe to ignore these modifications, but if you can,
+then delete the untracked files listed by `git status` run in the module
+directory.
+* `(modified content)`: sources have been edited -- you must navigate to the
+module directory and run `git reset --hard HEAD` to discard those modifications.
+If you want to keep the modifications, then first `git stash save`.
+* `(new commits)`: you have committed something. If you want to keep these
+commits, then navigate into the module directory and put the commits onto a
+branch `git checkout -b branch-with-changes`: you can reapply them after you update
+your working copy. Otherwise, you can ignore this `modified` state.
+
+### Update to latest commit in the remote repository
+
+Proceed only if `git status` reports that you have no modifications, otherwise
+the following commands will fail.
+
+Fetch the commits with the updates into your local clone, without merging
+anything yet:
+
+    $ git fetch origin
+
+Reset your working copy to the remote commit, and checkout submodules to their
+new commits:
+
+    $ git reset --hard origin/zebu
+    $ git submodule update
+
+Note: we do a fetch+reset instead of a merge/pull because this is simpler and
+more robust, and sometimes we might override the branch (aka. force-push) which
+would prevent merges from working.
+
+If you know which hash you want your working copy to be updated to,
+you may check the current hash of your working copy to make sure that
+it matches the desired hash:
+
+    $ git log -1
+
+### Re-build components that have changed
+
+Now you have the updated sources, and you need to clean, then re-build each
+group of components whose sources have changed. Depending on the update,
+you may need to re-build a subset of the following groups of components:
+
+1. Dependency sysroot (only relevant if you are using one at all): usually, you
+   will not need to rebuild the dependency sysroot, since it is unlikely to
+change often, however if you know sysroot has changed, to clean and rebuild it,
+first open a new Bash shell ***without*** the SDK environment loaded (it is not
+enough to run `bash`, you need a fresh shell):
+
+        (ssh into the server / open a new terminal)
+        $ bash
+        $ source hpsc/scs-env.sh
+        $ make sdk/deps/clean sdk/hpsc-sdk-tools/sysroot/clean
+        $ make sdk/deps/sysroot
+
+2. The HPSC SDK including Zebu sub-component (do rebuild this when unsure) --
+make sure your existing SDK environment ***is*** loaded (`source
+sdk/bld/env.sh`):
+
+        $ make sdk/clean sdk/fetch/clean sdk/zebu/clean
+        $ make sdk sdk/zebu
+
+3. The HPSC SSW stack, in the following commands, replace `PROFILE` with the
+name of the profile you are working with (always rebuild this) -- make sure the
+SDK environment ***is*** loaded:
+
+        $ make ssw/prof/PROFILE/clean
+        $ make ssw/prof/PROFILE
+
+## Author commits and push them to remote
 
 After work in child repos has been committed and pushed,
 check which repos have been modified:
