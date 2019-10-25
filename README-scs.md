@@ -85,17 +85,18 @@ Build, run, and debug the HPSC System Software Stack
 Assumes the SCS environment *and* the SDK environment where both loaded into
 the current shell (see the above two sections).
 
-Change to `ssw/` directory (or, alternatively, prefix all targets with `ssw-`
-at the top level):
+The following instructions assume you are in top-level `hpsc` directory,
+so make targets are prefixed with `ssw/`. Alternatively, you may `cd` into `ssw/`
+directory and omit the `ssw/` prefix in targets.
 
-    $ cd ssw
+Note: targets must not have a trailing `/`.
 
 The HPSC SSW stack can be built in one of several configuration profiles.  List
 the available configuration profiles (runnable profiles are prefixed with
 `sys-`):
 
-	$ make
-	$ make list/sys
+	$ make ssw
+	$ make ssw/list/sys
 
 To list profiles along with descriptions:
 
@@ -106,20 +107,43 @@ Note that the profile description indicates if the profile depends on other
 profiles, which must be built ahead of time (manually, and in sequence one at a
 time -- a current limitation of infrastructure).
 
-Not all profiles are supported on Zebu, some are listed below.
-Generally, profiles runnable on Zebu are also runnable in Qemu.
+Not all profiles are supported on Zebu, currently, the pofiles that are
+compatible with Zebu will have the configuration identified in the following
+name pattern `sys-preload-trch-bm-min-hpps-128M-*-ub-nodcd-booti-busybox`:
+ * TRCH BM app configured for minimal feature set (relevant when the profile is
+   run in Qemu)
+ * HPPS SW stack (and Qemu model) is configured for HPPS DDR of size 128M
+ * A ***workaround*** hack is applied to U-boot to not disable EL0/EL1 A53 Data
+   Cache before jumping to Linux because doing so generates an abort exception
+   on Zebu.
+ * U-boot is configured to boot uncompressed Linux kernel with `booti` command
+  (for faster boot)
+ * The HPPS SW stack consists of ATF+U-boot+Linux and Busybox on a very basic
+   initramfs
 
-	sys-preload-trch-bm-min-hpps-booti-busybox
-	sys-preload-trch-bm-min-hpps-busybox (slower)
-	sys-preload-trch-bm-min-hpps-yocto-initramfs (only if Zebu mem > 128 MB; not yet)
+Several profiles that match the above categories are defined with `*` in the
+above pattern filled in with:
+ * `smc`: enable the SMC-353 controller and drivers
+ * `eth-snps`: Synopsys DW QoS Ethernet NIC and driver enabled
+ * `smp4` and `smp8`: boot with multiprocessor mode (does not work -- pending a
+   way to command Zebu harness to reset secondary CPUs from within Linux/ATF)
+ * `` (nothing): without the Dcache disable workaround in U-boot (will hang,
+   use for debugging the issue)
 
-Note: profiles with full TRCH config (i.e. without `trch-bm-min`) will run on
-Zebu but not on Qemu with HW device tree configured to match Zebu HW, because
-Qemu executes TRCH and TRCH will fail if it accesses non-existant devices.
+Profiles runnable on Zebu are also runnable in Qemu (Qemu will be configured to
+match the HW configuration of Zebu):
 
-To (incrementally) build and run the selected profile in Zebu:
+***IMPORTANT***: When switching between different profiles, make sure to
+(shallowly) clean the new profile before using it (for details see section on
+switching profiles in
+[ssw/hpsc-utils/doc/README.md](ssw/hpsc-utils/doc/README.md)):
 
-	$ make prof/sys-preload-trch-bm-min-hpps-booti-busybox/run/zebu
+	$ make ssw/prof/PROFILE/bld/clean
+
+To (incrementally) build and run the selected profile in Zebu (subsitute
+`PROFILE` with the full profile name):
+
+	$ make ssw/prof/PROFILE/run/zebu
 
 In a different shell (also with SDK environment loaded!), connect to the serial
 console on HPPS UART:
@@ -128,7 +152,7 @@ console on HPPS UART:
 
 To (incrementally) build run the selected profile in Qemu:
 
-	$ make prof/sys-preload-trch-bm-min-hpps-booti-busybox/run/qemu
+	$ make ssw/prof/PROFILE/run/qemu
 
 In a different shell (also will SDK environment loaded!) connect to the serial
 console screen session printed when Qemu runs.  Use a separate shell for each
@@ -146,21 +170,20 @@ respective run. It is also possible to build those artifacts individually, for
 example the memory images loaded into the emulator, as described below.
 
 To only produce the artifacts necessary to run in Zebu (memory images, memory
-loader configuration file), without actually running, for the selected profile,
-for example for `sys-preload-trch-bm-min-hpps-booti-busybox` profile:
+loader configuration file), without actually running, for the selected profile:
 
-	$ make prof/sys-preload-trch-bm-min-hpps-booti-busybox/bld/zebu
+	$ make ssw/prof/PROFILE/bld/zebu
 
 The generated configuration file for Zebu with paths to generated memory images
 and the information into which memory each image should be loaded is going to
 be generated in the following file:
 
-	$ cat prof/sys-preload-trch-bm-min-hpps-booti-busybox/bld/zebu/preload.zebu.mem.map
+	$ cat ssw/prof/PROFILE/bld/zebu/preload.zebu.mem.map
 
 The memory images will be in that same directory, named `*.mem.raw` or
 `*.mem.vhex`, for example, the memory image for the HPPS DRAM will be:
 
-	$ ls prof/sys-preload-trch-bm-min-hpps-booti-busybox/bld/zebu/hpps.dram.mem.raw
+	$ ls -lh ssw/prof/PROFILE/bld/zebu/hpps.dram.mem.raw
 
 ## Complete documentation on building and running profiles
 
