@@ -9,9 +9,14 @@ the network share:
     $ mkdir /projects/boeing/$(whoami)
     $ cd /projects/boeing/$(whoami)
 
-Get the source by cloning `zebu` branch:
+Get the source by cloning `zebu` branch of the parent repository
+non-recursively (because SCS server is offline), and running the init script to
+override the (Internet) URLs of nested submodules to the the paths relative to
+the parent repository (on the SCS server):
 
-    $ git clone --recursive -b zebu /projects/boeing/isi/hpsc
+    $ git clone -b zebu /projects/boeing/isi/hpsc
+    $ cd hpsc
+    $ ./init-relative.sh
 
 Configure the environment for SCS server
 ========================================
