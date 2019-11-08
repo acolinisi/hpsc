@@ -50,3 +50,15 @@ gmk() {
 		else echo -e \"\$ERROR: not on branch $branch\" 1>&2; \
 		fi"
 }
+
+function version_gt() {
+    test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1";
+}
+git_remote_url() {
+    if version_gt $(git --version | cut -d' ' -f3) 2.23
+    then
+        git remote get-url $1
+    else
+        git remote -v | grep ^$1 | head -1 | xargs echo | cut -d' ' -f2
+    fi
+}
