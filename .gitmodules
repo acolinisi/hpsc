@@ -33,7 +33,7 @@
 [submodule "ssw/hpps/arm-trusted-firmware"]
 	path = ssw/hpps/arm-trusted-firmware
 	url = /projects/boeing/isi/hpsc/ssw/hpps/arm-trusted-firmware
-	branch = zebu
+	branch = snap
 [submodule "ssw/hpps/u-boot"]
 	path = ssw/hpps/u-boot
 	url = /projects/boeing/isi/hpsc/ssw/hpps/u-boot
