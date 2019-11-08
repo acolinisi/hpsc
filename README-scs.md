@@ -22,27 +22,32 @@ Configure the environment for SCS server
 ========================================
 
 Working on SCS server requires some configuration, to handle the fact
-that the server is offline (without Internet access), and that the
-bare clone of the source repository as well as some pre-fetched sources
-are accessed by multiple users. Also, setups all invocations of make
-to be parallel.
+that the server is offline (without Internet access), so create a
+per-working-copy config file (you only need to do this once):
 
-All work on HPSC stack can only be done from Bash shell, not the default
-Csh shell, so every time you login to the SCS server, launch the bash
-shell as the first thing you do:
+	$ cd hpsc
+	$ echo 'source ${SELF_DIR}/fetchcache-relative.sh' > .hpscrc
 
-	$ bash
+Load the HPSC environment into the shell
+========================================
 
-Then, every time you want to work on the HPSC, load the environment:
+The HPSC environment file sets up some useful configuration, e.g.  sets all
+invocations of make to be paralle, allows the the remote clone of the source
+repository to be accessed by multiple users when cloned by file path on an
+online server, loads the per-working-copy config, loads the HPSC SDK if it is
+built.
 
-    $ source /projects/boeing/$(whoami)/hpsc/scs-env.sh
+Every time you want to work on the HPSC in a new shell, start a Bash shell and
+load the HPSC environment (also, make sure your environment is clean -- ensure
+that no environment files been loaded):
 
-Alternatively, confgure Bash to autoload this environment (the pollution
-of the environment from this script is harmless w.r.t. to non-HPSC
-tasks you care to run on the server, as opposed to HPSC SDK environment
-discussed below that should not be autoloaded):
+    $ cd hpsc
+    $ bash
+    $ source env.sh
 
-    $ echo "source /projects/boeing/$(whoami)/hpsc/scs-env.sh" >> ~/.bashrc
+Do not configure your shell to load this environment automatically (e.g. via
+`~/.bashrc`) because it will pollute your environment potentially breaking
+other work not related to HPSC.
 
 Build the HPSC SDK
 ==================
@@ -58,9 +63,9 @@ Build the sysroot against which the SDK will be build (~5 min on 16 cores):
 
     $ make sdk/deps/sysroot
 
-Load the sysroot into the environment (needed only for building the SDK):
+Re-load the environment to load the newly built sysroot into the shell:
 
-    $ source sdk/hpsc-sdk-tools/sysroot/bld/env.sh
+    $ source env.sh
 
 Build the SDK including Zebu harness (includes Qemu emulator and host tools):
 
@@ -68,21 +73,15 @@ Build the SDK including Zebu harness (includes Qemu emulator and host tools):
 
 More details in the generic documentation in `ssw/hpsc-utils/doc/README.md`.
 
-Load the SDK into shell environment
-====================================
+Re-load the environment to load the newly built sysroot into the shell:
 
-Load the SDK into the environment. ***Do this every time you start a new
-shell***, but do NOT automatically load it in your shell profile, e.g. do not
-put it into ~/.bashrc or similar because it will pollute the environment and
-will break non-HPSC related tasks that you might work on on in strange ways):
-
-    $ source sdk/bld/env.sh
+    $ source env.sh
 
 Build, run, and debug the HPSC System Software Stack
 ====================================================
 
-Assumes the SCS environment *and* the SDK environment where both loaded into
-the current shell (see the above two sections).
+Ensure that the HPSC environment has been loaded into the current shell (see
+the above).
 
 The following instructions assume you are in top-level `hpsc` directory,
 so make targets are prefixed with `ssw/`. Alternatively, you may `cd` into `ssw/`
@@ -162,9 +161,9 @@ To (incrementally) build run the selected profile in Qemu:
 
 	$ make ssw/prof/PROFILE/run/qemu
 
-In a different shell (also will SDK environment loaded!) connect to the serial
+In a different shell (also with HPSC environment loaded!) connect to the serial
 console screen session printed when Qemu runs.  Use a separate shell for each
-serial port (and make sure that each shell has the SDK environment loaded into
+serial port (and make sure that each shell has the HPSC environment loaded into
 it!), for HPPS:
 
     $ screen -r hpsc-0-hpps
