@@ -16,13 +16,25 @@ MODS=(
     sdk/qemu
 )
 
+function version_gt() {
+    test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1";
+}
+remote_url() {
+    if version_gt $(git --version | cut -d' ' -f3) 2.23
+    then
+        git remote get-url $1
+    else
+        git remote -v | grep ^$1 | head -1 | xargs echo | cut -d' ' -f2
+    fi
+}
+
 if [ "$#" -eq 1 ]
 then
     BASE_URL="$1"
 else
     if [ "$#" -eq 0 ]
     then
-        BASE_URL="$(git remote get-url origin)"
+        BASE_URL="$(remote_url origin)"
         if [ -z "$BASE_URL" ]
         then
             echo "ERROR: no base URL passed; failed to get URL of origin remote" 1>&2
