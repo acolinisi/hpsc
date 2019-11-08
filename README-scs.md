@@ -148,6 +148,16 @@ console on HPPS UART:
 
     $ screen -r zebu-uart-hpps
 
+To quit ZeBu emulator:
+
+    % quit
+
+A stackdump and a hang on exit from Zebu is commonly observed. If the ZeBu
+process fails to exit, then send it to background with `Ctrl-Z` and kill the
+job:
+
+    $ kill %1
+
 To (incrementally) build run the selected profile in Qemu:
 
 	$ make ssw/prof/PROFILE/run/qemu
