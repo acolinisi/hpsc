@@ -1,50 +1,50 @@
 [submodule "sdk/qemu"]
 	path = sdk/qemu
-	url = git@github.com:ISI-apex/qemu.git
+	url = https://github.com/ISI-apex/qemu.git
 	branch = snap
 [submodule "sdk/qemu-devicetrees"]
 	path = sdk/qemu-devicetrees
-	url = git@github.com:ISI-apex/qemu-devicetrees.git
+	url = https://github.com/ISI-apex/qemu-devicetrees.git
 	branch = snap
 [submodule "sdk/hpsc-sdk-tools"]
 	path = sdk/hpsc-sdk-tools
-	url = git@github.com:ISI-apex/hpsc-sdk-tools.git
+	url = https://github.com/ISI-apex/hpsc-sdk-tools.git
 	brach = snap
 [submodule "ssw/hpsc-utils"]
 	path = ssw/hpsc-utils
-	url = git@github.com:ISI-apex/hpsc-utils.git
+	url = https://github.com/ISI-apex/hpsc-utils.git
 	branch = snap
 [submodule "ssw/hpsc-baremetal"]
 	path = ssw/hpsc-baremetal
-	url = git@github.com:ISI-apex/u-boot.git
+	url = https://github.com/ISI-apex/hpsc-baremetal.git
 	branch = snap
 [submodule "ssw/rtps/r52/u-boot"]
 	path = ssw/rtps/r52/u-boot
-	url = git@github.com:ISI-apex/u-boot.git
+	url = https://github.com/ISI-apex/u-boot.git
 	branch = snap
 [submodule "ssw/rtps/a53/arm-trusted-firmware"]
 	path = ssw/rtps/a53/arm-trusted-firmware
-	url = git@github.com:ISI-apex/arm-trusted-firmware.git
+	url = https://github.com/ISI-apex/arm-trusted-firmware.git
 	branch = snap
 [submodule "ssw/rtps/a53/u-boot"]
 	path = ssw/rtps/a53/u-boot
-	url = git@github.com:ISI-apex/u-boot.git
+	url = https://github.com/ISI-apex/u-boot.git
 	branch = snap
 [submodule "ssw/hpps/arm-trusted-firmware"]
 	path = ssw/hpps/arm-trusted-firmware
-	url = git@github.com:ISI-apex/arm-trusted-firmware.git
+	url = https://github.com/ISI-apex/arm-trusted-firmware.git
 	branch = snap
 [submodule "ssw/hpps/u-boot"]
 	path = ssw/hpps/u-boot
-	url = git@github.com:ISI-apex/u-boot.git
+	url = https://github.com/ISI-apex/u-boot.git
 	branch = snap
 [submodule "ssw/hpps/linux"]
 	path = ssw/hpps/linux
-	url = git@github.com:ISI-apex/linux-hpsc.git
+	url = https://github.com/ISI-apex/linux-hpsc.git
 	branch = snap
 [submodule "ssw/hpps/busybox"]
 	path = ssw/hpps/busybox
-	url = git@github.com:ISI-apex/busybox.git
+	url = https://github.com/ISI-apex/busybox.git
 	branch = snap
 [submodule "ssw/hpps/yocto/meta-openembedded"]
 	path = ssw/hpps/yocto/meta-openembedded
@@ -54,4 +54,4 @@
 	url = https://git.yoctoproject.org/git/poky
 [submodule "ssw/hpps/yocto/meta-hpsc"]
 	path = ssw/hpps/yocto/meta-hpsc
-	url = git@github.com:ISI-apex/meta-hpsc.git
+	url = https://github.com/ISI-apex/meta-hpsc.git
