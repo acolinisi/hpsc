@@ -20,7 +20,7 @@ if [ "${NPROC}" -ge 8 ] # hack to distinguish a shared server vs local box
 then
     NPROC=$((NPROC - 4)) #  don't hog all cores on shared servers
 fi
-alias make="make -j${NPROC}"
+alias make="nice make -j${NPROC}"
 
 source ${SELF_DIR}/git-alias.sh
 
