@@ -22,8 +22,6 @@ then
 fi
 alias make="nice make -j${NPROC}"
 
-source ${SELF_DIR}/git-alias.sh
-
 USER_RC=${SELF_DIR}/.hpscrc
 if [ -f "${USER_RC}" ]
 then
