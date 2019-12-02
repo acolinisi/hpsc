@@ -149,9 +149,21 @@ you may need to re-build a subset of the following groups of components:
 
         (ssh into the server / open a new terminal)
         $ bash
-        $ source hpsc/scs-env.sh
+        $ cd hpsc
+
+    If you are working on an offline server (e.g. Synopsis Cloud for Zebu),
+    setup environment with paths to pre-fetched source archives:
+
+        $ source fetchcache-relative.sh
+
+    Clean and re-build the sysroot:
+
         $ make sdk/deps/clean sdk/hpsc-sdk-tools/sysroot/clean
         $ make sdk/deps/sysroot
+
+    Re-load the HPSC environment:
+
+        $ source env.sh
 
 2. The HPSC SDK (do rebuild this when unsure) -- make sure your existing SDK
    environment ***is*** loaded (`source sdk/bld/env.sh`):
@@ -166,6 +178,10 @@ you may need to re-build a subset of the following groups of components:
 
             $ make sdk/zebu/clean
             $ make sdk/zebu
+
+    c. Re-load environment:
+
+            $ source env.sh
 
 3. The HPSC SSW stack, in the following commands, replace `PROFILE` with the
    name of the profile you are working with (always rebuild this) -- make sure
