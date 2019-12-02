@@ -30,7 +30,7 @@ the desired base URL as an argument to `./init-relative.sh`.
 # Build and run
 
 For building and running, see the generic instructions in
-[ssw/hpsc-utils/doc/README.md](ssw/hpsc-utils/doc/README.md).
+`ssw/hpsc-utils/doc/README.md`.
 
 # Development workflow
 
