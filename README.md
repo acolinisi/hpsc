@@ -102,7 +102,9 @@ then delete the untracked files listed by `git status` run in the module
 directory.
 * `(modified content)`: sources have been edited -- you must navigate to the
 module directory and run `git reset --hard HEAD` to discard those modifications.
-If you want to keep the modifications, then first `git stash save`.
+If you want to keep the modifications, then navigate to teh module direcotry
+and save the changes with `git stash save`, after you update, you can restore
+the changes by navigating to the module directory and running `git stash pop`.
 * `(new commits)`: you have committed something. If you want to keep these
 commits, then navigate into the module directory and put the commits onto a
 branch `git checkout -b branch-with-changes`: you can reapply them after you update
