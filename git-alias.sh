@@ -41,13 +41,33 @@ gmp() {
 # For each submdule, checkout the given branch if current hash matches; useful
 # for re-attaching child repos to a branch after 'git sumodule update'.
 gmk() {
+	local replace=0
+	local OPTIND opt
+	while getopts "r?" opt; do
+	    case "${opt}" in
+		r) replace=1 ;;
+		*)
+		    echo "ERROR: invalid argument: ${opt}" 1>&2
+		    return 1
+		    ;;
+	    esac
+	done
+	shift $((OPTIND-1))
 	local branch=$1; branch=${branch:=master}
 	local _RED='\033[0;31m'
 	local _NOCOLOR='\033[0m'
 	ERROR="${_RED}FAILED${_NOCOLOR}" git submodule foreach \
-		"if [ \"\$(git rev-parse HEAD)\" = \"\$(git rev-parse $branch 2>/dev/null)\" ]; \
-		then git checkout $branch; \
-		else echo -e \"\$ERROR: not on branch $branch\" 1>&2; \
+		"run() { echo \"\$@\"; \"\$@\"; }; \
+		if [ \"\$(git rev-parse HEAD)\" = \"\$(git rev-parse $branch 2>/dev/null)\" ]; \
+		then run git checkout $branch; \
+		else if [ "$replace" -eq 1 ]; \
+		     then if git rev-parse $branch 2>/dev/null 1>&2; \
+			  then run git branch -D $branch; \
+			       run git checkout -b $branch; \
+			  else echo -e \"\$ERROR: no branch $branch\" 1>&2; \
+			  fi; \
+		     else echo -e \"\$ERROR: not on branch $branch\" 1>&2; \
+		     fi; \
 		fi"
 }
 
