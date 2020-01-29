@@ -63,7 +63,7 @@ gmk() {
 		else if [ "$replace" -eq 1 ]; \
 		     then if git rev-parse $branch 2>/dev/null 1>&2; \
 			  then run git branch -D $branch; \
-			       run git checkout -b $branch; \
+			       run git checkout -b $branch HEAD; \
 			  else echo -e \"\$ERROR: no branch $branch\" 1>&2; \
 			  fi; \
 		     else echo -e \"\$ERROR: not on branch $branch\" 1>&2; \
