@@ -13,7 +13,7 @@ gmb() {
        git submodule foreach \
 		"if [ \$($gbc) != HEAD ]; \
                 then echo \$($gbc); \
-                else echo WARN: not on any branch; fi"
+                else echo WARN: not on any branch; fi ||:"
 }
 
 # For each sobmodule, list new commits on current branch not pushed to remote
@@ -25,7 +25,7 @@ gmn() {
 		 then if git rev-parse $remote/\$($gbc) 2>/dev/null 1>&2; \
 			 then git log --oneline $remote/\$($gbc)..\$($gbc); \
 			 else echo WARN: no branch \$($gbc) in remote $remote; fi \
-		 else echo WARN: not on any branch; fi"
+		 else echo WARN: not on any branch; fi ||:"
 }
 
 # For each sobmodule, push the given branch if it exists
@@ -35,7 +35,7 @@ gmp() {
 	git submodule foreach \
 		"if git rev-parse $br 2>/dev/null 1>&2; \
 		then echo git push $remote $br:$br && git push $remote $br:$br; \
-		else echo WARN: no branch $br; fi"
+		else echo WARN: no branch $br; fi ||:"
 }
 
 # For each submdule, checkout the given branch if current hash matches; useful
@@ -68,7 +68,7 @@ gmk() {
 			  fi; \
 		     else echo -e \"\$ERROR: not on branch $branch\" 1>&2; \
 		     fi; \
-		fi"
+		fi ||:"
 }
 
 function version_gt() {
