@@ -121,8 +121,8 @@ anything yet:
     $ git fetch origin
 
 Reset your working copy to the remote commit (replace `BRANCH` with the parent
-branch that you are working with, e.g. `master` or `zebu`), and checkout
-submodules to their new commits:
+branch that you are working with: usually `master`), and checkout submodules to
+their new commits:
 
     $ git reset --hard origin/BRANCH
     $ git submodule update
