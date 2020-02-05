@@ -73,12 +73,13 @@ The reported modifications could include one or more of the above:
 * `(modified content)`: sources have been edited -- you must decide
 whether to keep or discard these modifications. If you want to keep
 these changes, then navigate to the submodule directory, and either commit the
-changes (with `git add` and `git commit) or stash the changes (with `git stash save`,
-later stashed changes may be viewed with `git stash show -p` and re-applied
-on top of current head with `git stash pop`). If you do not want to keep
-the changes, then discard them with `git reset --hard HEAD`; if you want to
-discard such uncommitted modifications for all submodules, you can do this with
-one command for all submodules: `git submodule foreach git reset --hard HEAD`.
+changes (with `git add` and `git commit`) or stash the changes (with `git stash
+save`, later stashed changes may be viewed with `git stash show -p` and
+re-applied on top of current head with `git stash pop`). If you do not want to
+keep the changes, then discard them with `git reset --hard HEAD`; if you want
+to discard such uncommitted modifications for all submodules, you can do this
+with one command for all submodules: `git submodule foreach git reset --hard
+HEAD`.
 
 * `(new commits)`: you have committed patches on top of the previous
 snapshot. If you want to keep these changes and re-apply these changes on top
@@ -191,10 +192,17 @@ may follow, resolve each as above):
 
     $ git rebase --continue
 
-After you've resolved all conflicts, the rebase of each submodule is
-completed. Your working copy status should show the `(new commits)`
-modifications as before you updated, but now these new commits are
-on top of the latest snapshot:
+Double check that the rebase has completed, by checking that
+the status does not show "rebase in progress" (if it does, then
+check that current conflicts have been resolved, and issue the
+rebase continue command from above):
+
+    $ git status
+
+After you've resolved all conflicts in each submodule, the rebase of each
+submodule is completed. Your working copy status *at top-level* should show the
+`(new commits)` modifications as before you updated, but now these new commits
+are on top of the latest snapshot:
 
     $ git status
 
@@ -204,45 +212,58 @@ Now you have the updated sources, and you need to clean, then re-build each
 group of components whose sources have changed. Depending on the update,
 you may need to re-build a subset of the following groups of components:
 
-1. Dependency sysroot (only relevant if you are using one at all): usually, you
-   will not need to rebuild the dependency sysroot, since it is unlikely to
-   change often, however if you know sysroot has changed, to clean and rebuild
-   it, first open a new Bash shell ***without*** the SDK environment loaded (it
-   is not enough to run `bash`, you need a fresh shell):
+1. Dependencies (either system or sysroot, depending on what you're using).
+   Usually, you will not need to rebuild the dependencies (i.e. usually
+   you can skip this step), since they do not change often, however, if you
+   know they changed then, follow one of the following sets of instructions:
 
-        (ssh into the server / open a new terminal)
-        $ bash
-        $ cd hpsc
+   a. System dependencies (only relevant if you are building against system, 
+   dependencies, i.e. when you first built, the deps target you ran was `make
+   sdk/deps/DISTRO`). To install any changed dependencies, run the following
+   replacing DISTRO with the name of your distribution, e.g. `centos7`, see
+   `ssw/hpsc-utils/doc/README.md` for other choices):
+
+            $ make sdk/deps/DISTRO
+
+   b. Dependency sysroot (only relevant if you are using one at all, i.e. if
+   when you first built, the deps target you ran was `make
+   sdk/deps/sysroot`). To clean and rebuild the sysroot, first open a new Bash
+   shell ***without*** the SDK environment loaded (it is not enough to run
+   `bash`, you need a fresh shell):
+
+            (ssh into the server / open a new terminal)
+            $ bash
+            $ cd hpsc
 
     If you are working on an offline server (e.g. Synopsis Cloud for Zebu),
     setup environment with paths to pre-fetched source archives:
 
-        $ source fetchcache-relative.sh
+            $ source fetchcache-relative.sh
 
     Clean and re-build the sysroot:
 
-        $ make sdk/deps/clean sdk/hpsc-sdk-tools/sysroot/clean
-        $ make sdk/deps/sysroot
+            $ make sdk/deps/clean sdk/hpsc-sdk-tools/sysroot/clean
+            $ make sdk/deps/sysroot
 
     Re-load the HPSC environment:
 
-        $ source env.sh
+            $ source env.sh
 
 2. The HPSC SDK (do rebuild this when unsure) -- make sure your existing SDK
    environment ***is*** loaded (`source sdk/bld/env.sh`):
 
-   a. Rebuild the main components of the SDK:
+   Rebuild the main components of the SDK:
 
             $ make sdk/clean sdk/fetch/clean
             $ make sdk
 
-   b. If you are working with the Zebu emulator, rebuild the `zebu` subcompoent
-      of the SDK, since it is not built as part of the SDK by default:
+   If you are working with the Zebu emulator, also rebuild the `zebu` subcomponent
+   of the SDK, since it is not built as part of the SDK by default:
 
             $ make sdk/zebu/clean
             $ make sdk/zebu
 
-    c. Re-load environment:
+    Re-load environment:
 
             $ source env.sh
 
