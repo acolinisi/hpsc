@@ -54,12 +54,20 @@ gmk() {
 	done
 	shift $((OPTIND-1))
 	local branch=$1; branch=${branch:=master}
+	local locbranch=$(basename $branch)
+	local remote=$(dirname $branch)
 	local _RED='\033[0;31m'
 	local _NOCOLOR='\033[0m'
 	ERROR="${_RED}FAILED${_NOCOLOR}" git submodule foreach \
 		"run() { echo \"\$@\"; \"\$@\"; }; \
 		if [ \"\$(git rev-parse HEAD)\" = \"\$(git rev-parse $branch 2>/dev/null)\" ]; \
-		then run git checkout $branch; \
+		then if git rev-parse $locbranch 2>/dev/null 1>&2; \
+		     then run git checkout $locbranch; \
+		     else if [ -n "$remote" ]; \
+			  then run git checkout -b $locbranch $branch; \
+			  else echo -e \"\$WARN: no branch $locbranch and no remote specified\" 1>&2; \
+			  fi; \
+		     fi; \
 		else if [ "$replace" -eq 1 ]; \
 		     then if git rev-parse $branch 2>/dev/null 1>&2; \
 			  then run git branch -D $branch; \
