@@ -41,10 +41,12 @@ Source some useful shell aliases and helpers for common git operations:
 Notable aliases:
 
 * `gms`: git submodule summary: show status of changes relative to ref in parent
-* `gnp`: for each submodule print commits in the current branch not in the
+* `gnp REMOTE BRANCH`: for each submodule print commits in the current branch not in the
   respective branch in the remote (by default 'origin'), i.e. new unpushed.
-* `gmk`: for each submodule, checkout the given branch if current hash matches;
-   useful for re-attaching child repos to a branch after 'git sumodule update'.
+* `gmk [-r] BRANCH`: for each submodule, checkout the given branch if current
+  hash matches; when `-r` is given, existing local branch of the same name will
+  be reset to the current HEAD; useful for re-attaching child repos to a branch
+  after 'git sumodule update'.
 * `gmb`: for each submodule print the current local branch
 
 ## Updating your working copy of the repository
@@ -57,77 +59,101 @@ Remember to load the SDK environment into your shell before proceeding.
 ### Clean your working copy
 
 Before you an update, it is essential that your working copy does not
-have any local modifications (i.e. is "clean").
+have any uncommitted local modifications (i.e. each submodule is "clean",
+and the top-level modifications only amount to new commits) -- more
+details follow.
 
-If you have modifications and you care to keep them, then do not proceed with
-the update, and instead figure out how to `git stash save` your changes or
-commit them to a local branch: some tips are given in the following subsection.
-
-To check for modification look at the output of the status command:
+To check for modification look at the output of the status command at
+the top-level:
 
     $ git status
 
-To discard all local changes (all modified files, untracked files, and even
-unpushed commits ***will be lost***, do not procede if you care about your
-changes, instead see next subsection):
+The reported modifications could include one or more of the above:
 
-    $ git reset --hard HEAD
-    $ git submodule update
+* `(modified content)`: sources have been edited -- you must decide
+whether to keep or discard these modifications. If you want to keep
+these changes, then navigate to the submodule directory, and either commit the
+changes (with `git add` and `git commit`) or stash the changes (with `git stash
+save`, later stashed changes may be viewed with `git stash show -p` and
+re-applied on top of current head with `git stash pop`). If you do not want to
+keep the changes, then discard them with `git reset --hard HEAD`; if you want
+to discard such uncommitted modifications for all submodules, you can do this
+with one command for all submodules: `git submodule foreach git reset --hard
+HEAD`.
+
+* `(new commits)`: you have committed patches on top of the previous
+snapshot. If you want to keep these changes and re-apply these changes on top
+of the latest snapshot after you update, you do not need to do anything
+at this point but you will need to pass arguments to the update command 
+as described later in this guide. If you want to keep these changes but you
+don't want to automatically re-apply them after update (e.g. if you want to
+update and work with the unmodified latest snapshot), then navigate into the
+submodule's directory and put the commits onto a new branch `git checkout -b
+branch-with-changes` (after you update, you can re-apply them manually with
+merge or cherry-pick from this new branch). If you do not want to keep these
+changes at all (unlikely, since you committed them), then at top-level
+run `git submodule update -- MODULE` (where MODULE is the path, like
+`sdk/qemu`) to return the module to the commit referenced by the current
+snapshot; to do this for all modules at once: `git submodule update`.
+
+* `(untracked content)`: files not version controled (and not ignored by
+.gitignore) exist in the submodule directory  -- usually it is ok to ignore
+these modifications, but check what they are in case you forgot to add
+a file to a commit; to remove such files, navigate to the submodule directory
+and run `git clean -df`; to do this for all submodules at once: `git submodule
+foreach git clean -df`.  (On Networked File System shares, sometimes stale
+file handles of the form `.nfs*` appear and they are undeletable -- it's ok to
+leave them.)
+
+In the unlikely case, *if you want to discard all local modifications*, the
+instructions given above amount to the following commands (***WARNING: If you
+run the following, changes will be lost! Do not run this if you have changes to
+keep, instead read the instructions above.***):
+
+    $ git submodule update --checkout
     $ git submodule foreach git reset --hard HEAD
     $ git submodule foreach git clean -df
 
-Ensure that your working copy is clean:
+After you take your chosen actions from above, re-check the status at
+top-level, and keep taking action, referring to the above, until status reports
+that your working copy is clean or that the only modifications you have are
+the `(new commits)` that you want to keep and automatically re-apply after
+update. For a clean working copy (without any commits to keep), you would see:
 
     $ git status
-        On branch zebu
-        Your branch is up to date with 'origin/zebu'.
+        On branch master
+        Your branch is up to date with 'origin/master'.
 
         nothing to commit, working tree clean
 
-If you see modifications reported, you check the following section for details
-on how to keep or discard them manually
+To see which commits will be kept and re-applied, run:
 
-#### Manually keep or discard modifications
-
-If you see `modified` for some module, for example for `sdk/zebu` module,
-then that module source contains some modifications:
-
-        modified:   sdk/qemu
-
-The modifications could either be:
-* `(untracked content)`: files not version controled and not ignored exist in *
-the directory (these may be stale cache files from Networked File System
-(`.nfs*`)) -- usually it is safe to ignore these modifications, but if you can,
-then delete the untracked files listed by `git status` run in the module
-directory.
-* `(modified content)`: sources have been edited -- you must navigate to the
-module directory and run `git reset --hard HEAD` to discard those modifications.
-If you want to keep the modifications, then first `git stash save`.
-* `(new commits)`: you have committed something. If you want to keep these
-commits, then navigate into the module directory and put the commits onto a
-branch `git checkout -b branch-with-changes`: you can reapply them after you update
-your working copy. Otherwise, you can ignore this `modified` state.
+    $ git submodule summary
 
 ### Update to latest commit in the remote repository
 
-Proceed only if `git status` reports that you have no modifications, otherwise
-the following commands will fail.
+Proceed only if `git status` reports that your working copy is clean
+or that the modifications you have are new commits that you want to
+keep (see previous section), otherwise the following commands will fail.
 
 Fetch the commits with the updates into your local clone, without merging
-anything yet:
+anything yet (if this step fails, that means that whoever pushed the
+latest snapshot (aka. commit at the top-level parent repo) did not push the
+respective commits from the submodules, so check `git log` at the top-level and
+contact the author of latest commit):
 
     $ git fetch origin
 
 Reset your working copy to the remote commit (replace `BRANCH` with the parent
-branch that you are working with, e.g. `master` or `zebu`), and checkout
-submodules to their new commits:
+branch that you are working with: usually `master`), and checkout submodules to
+their new commits:
 
-    $ git reset --hard origin/BRANCH
-    $ git submodule update
+    $ git merge --ff-only origin/master
 
-Note: we do a fetch+reset instead of a merge/pull because this is simpler and
-more robust, and sometimes we might override the branch (aka. force-push) which
-would prevent merges from working.
+Update the submodule working copies to the snapshot, re-applying the commits
+that you chose to keep (if this step fails, see section below):
+
+    $ git submodule update --rebase
 
 If you know which hash you want your working copy to be updated to,
 you may check the current hash of your working copy to make sure that
@@ -135,51 +161,109 @@ it matches the desired hash:
 
     $ git log -1
 
+### Resolving conflicts upon update
+
+If the above update step fails due to a conflict, that means that your
+commits do not cleanly apply on top of the latest snapshot. You will
+need to navigate into each submodule that conflicted and resolve the
+conflicts there. To resolve a conflict, first check which files conflict:
+
+    $ git status
+
+For each file that conflicts, open it in an editor, and look for sections
+demarkated by markers like so:
+
+    <<<<< HEAD
+    this is the code that is in the latest snapshot
+    =======
+    this is the code that is in your new comit
+    >>>>> abcd1234: the commit that failed to apply
+
+Manually fix the code as appropriate (sometimes you keep both, sometimes you
+take one or the other), getting rid of the markers. At this point, it may make
+sense to test if the merged code actually builds and runs.
+
+After editting the files, add each file with:
+
+    $ git add FILE
+
+Then, continue the rebase that failed due to conflicts (more conflicts
+may follow, resolve each as above):
+
+    $ git rebase --continue
+
+Double check that the rebase has completed, by checking that
+the status does not show "rebase in progress" (if it does, then
+check that current conflicts have been resolved, and issue the
+rebase continue command from above):
+
+    $ git status
+
+After you've resolved all conflicts in each submodule, the rebase of each
+submodule is completed. Your working copy status *at top-level* should show the
+`(new commits)` modifications as before you updated, but now these new commits
+are on top of the latest snapshot:
+
+    $ git status
+
 ### Re-build components that have changed
 
 Now you have the updated sources, and you need to clean, then re-build each
 group of components whose sources have changed. Depending on the update,
 you may need to re-build a subset of the following groups of components:
 
-1. Dependency sysroot (only relevant if you are using one at all): usually, you
-   will not need to rebuild the dependency sysroot, since it is unlikely to
-   change often, however if you know sysroot has changed, to clean and rebuild
-   it, first open a new Bash shell ***without*** the SDK environment loaded (it
-   is not enough to run `bash`, you need a fresh shell):
+1. Dependencies (either system or sysroot, depending on what you're using).
+   Usually, you will not need to rebuild the dependencies (i.e. usually
+   you can skip this step), since they do not change often, however, if you
+   know they changed then, follow one of the following sets of instructions:
 
-        (ssh into the server / open a new terminal)
-        $ bash
-        $ cd hpsc
+   a. System dependencies (only relevant if you are building against system, 
+   dependencies, i.e. when you first built, the deps target you ran was `make
+   sdk/deps/DISTRO`). To install any changed dependencies, run the following
+   replacing DISTRO with the name of your distribution, e.g. `centos7`, see
+   `ssw/hpsc-utils/doc/README.md` for other choices):
+
+            $ make sdk/deps/DISTRO
+
+   b. Dependency sysroot (only relevant if you are using one at all, i.e. if
+   when you first built, the deps target you ran was `make
+   sdk/deps/sysroot`). To clean and rebuild the sysroot, first open a new Bash
+   shell ***without*** the SDK environment loaded (it is not enough to run
+   `bash`, you need a fresh shell):
+
+            (ssh into the server / open a new terminal)
+            $ bash
+            $ cd hpsc
 
     If you are working on an offline server (e.g. Synopsis Cloud for Zebu),
     setup environment with paths to pre-fetched source archives:
 
-        $ source fetchcache-relative.sh
+            $ source fetchcache-relative.sh
 
     Clean and re-build the sysroot:
 
-        $ make sdk/deps/clean sdk/hpsc-sdk-tools/sysroot/clean
-        $ make sdk/deps/sysroot
+            $ make sdk/deps/clean sdk/hpsc-sdk-tools/sysroot/clean
+            $ make sdk/deps/sysroot
 
     Re-load the HPSC environment:
 
-        $ source env.sh
+            $ source env.sh
 
 2. The HPSC SDK (do rebuild this when unsure) -- make sure your existing SDK
    environment ***is*** loaded (`source sdk/bld/env.sh`):
 
-   a. Rebuild the main components of the SDK:
+   Rebuild the main components of the SDK:
 
             $ make sdk/clean sdk/fetch/clean
             $ make sdk
 
-   b. If you are working with the Zebu emulator, rebuild the `zebu` subcompoent
-      of the SDK, since it is not built as part of the SDK by default:
+   If you are working with the Zebu emulator, also rebuild the `zebu` subcomponent
+   of the SDK, since it is not built as part of the SDK by default:
 
             $ make sdk/zebu/clean
             $ make sdk/zebu
 
-    c. Re-load environment:
+    Re-load environment:
 
             $ source env.sh
 

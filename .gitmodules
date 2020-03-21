@@ -55,3 +55,18 @@
 [submodule "ssw/hpps/yocto/meta-hpsc"]
 	path = ssw/hpps/yocto/meta-hpsc
 	url = https://github.com/ISI-apex/meta-hpsc.git
+[submodule "sdk/rtems-source-builder"]
+	path = sdk/rtems-source-builder
+	url = https://github.com/ISI-apex/rtems-source-builder.git
+[submodule "sdk/rtems-tools.git"]
+	path = sdk/rtems-tools.git
+	url = https://github.com/ISI-apex/rtems-tools.git
+[submodule "sdk/rtems-tools"]
+	path = sdk/rtems-tools
+	url = https://github.com/ISI-apex/rtems-tools.git
+[submodule "ssw/rtps/r52/rtems"]
+	path = ssw/rtps/r52/rtems
+	url = https://github.com/ISI-apex/rtems.git
+[submodule "ssw/rtps/r52/hpsc-rtems"]
+	path = ssw/rtps/r52/hpsc-rtems
+	url = https://github.com/ISI-apex/hpsc-rtems.git
